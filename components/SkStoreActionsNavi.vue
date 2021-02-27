@@ -1,15 +1,31 @@
 <script>
+import { 
+        VList,
+        VListItem,
+        VListItemIcon,
+        VListItemContent,
+        VImg
+} from 'vuetify/lib';
 import SkSvg from '~/components/SkSvg';
     
 export default {
         name: 'SkStoreActionsNavi',
         components: {
+            VList,
+            VListItem,
+            VListItemIcon,
+            VListItemContent,
+            VImg,
             SkSvg
         },
+        data(){
+            return { cats: [] };
+        },
+        async fetch(){
+            await this.$store.dispatch("active/getActions");            
+            this.cats = this.$store.state.active.groups;
+        },
         computed: {
-            cats(){
-                return this.$store.state.active.groups;
-            },
             has(){
                 return (this.cats?.length || 0) > 0;
             }
@@ -17,11 +33,20 @@ export default {
         methods: {
             go(cat){
                 this.$emit("click");
-                var h = $('.v-subheader[data-cat-id="' + cat.id + '"]');
-                if (h.length > 0){
-                    $([document.documentElement, document.body]).animate({
-                        scrollTop: h.offset().top-56
-                    }, 800);
+                
+                const _go = ()=>{
+                    var h = $('.v-subheader[data-cat-id="' + cat.id + '"]');
+                    if (h.length > 0){
+                        $([document.documentElement, document.body]).animate({
+                            scrollTop: h.offset().top-56
+                        }, 800);
+                    }
+                };
+                if (/(\/stores\/)+(.{38,})+/.test(this.$route.path)){ //don`t in store
+                    setTimeout(_go, 300);
+                    this.$router.back();
+                } else {
+                    _go();
                 }
             }
         },

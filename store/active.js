@@ -30,6 +30,12 @@ const mutations = {
         state.catalog= Object.assign({}, EMPTY_CAT);
     },
     setStore(state, payload) {
+        var old = state.store;
+        if ((!!old)&&(!!payload)){
+            if (old.id === payload.id){ //don`t rewrite
+                return;
+            }
+        }
         state.store  = payload;
         //reset's
         state.banners= null;
@@ -41,15 +47,19 @@ const mutations = {
         state.catalog= Object.assign({}, EMPTY_CAT);
     },
     setAdds(state, payload) {
+        if (!!payload.groups){
+            state.groups = payload.groups;
+        } 
         if (!!payload.actions){
             state.actions = payload.actions;
-        } else if (!!payload.groups){
-            state.groups = payload.groups;
-        } else if (!!payload.banners){
+        } 
+        if (!!payload.banners){
             state.banners = payload.banners;
-        } else if (!!payload.fills){
+        } 
+        if (!!payload.fills){
             state.fills = payload.fills;
-        } else if (!!payload.fill){
+        } 
+        if (!!payload.fill){
             state.fill  = payload.fill;
         }
     },
@@ -157,7 +167,7 @@ const actions = {
     },   //getBanners(
     async getActions(store){
         return new Promise((resolve, reject)=>{
-            if (!!store.state.actions){
+            if ((!!store.state.actions)&&(!!store.state.groups)){
                 resolve(store.state.actions);
                 return;
             }
@@ -181,7 +191,6 @@ const actions = {
                     acts.map((a)=>{
                         a.num = (!!a.num) ? Number(a.num) : 99999; //for sorting by category
                     });
-                    store.commit('setAdds', {actions: acts});
 
                     //buils action groups
                     var n, _cats = [];
@@ -207,8 +216,7 @@ const actions = {
                                 ? c1.name.localeCompare(c2.name)
                                 : c1.n < c2.n ? -1 : 1;
                     });
-                    store.commit('setAdds', {groups: _cats});
-                    
+                    store.commit('setAdds', {actions: acts, groups: _cats});
                     resolve(acts);
                 }catch(e){
                     reject(e);

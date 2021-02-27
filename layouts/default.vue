@@ -41,6 +41,7 @@
       temporary
       app
       right
+      @input="rightNavi"
     >
         <template v-slot:prepend>
             <v-list  :color="ab.bg" :dark="ab.dark">
@@ -56,9 +57,10 @@
             </v-list>    
         </template>
         <v-divider></v-divider>        
-          <SkStoreActionsNavi 
-              @click="rightDrawer=false" 
-          />
+            <SkStoreActionsNavi 
+                ref="actionsNavi"
+                @click="rightDrawer=false" 
+            />
     </v-navigation-drawer>
       
     <v-app-bar
@@ -213,6 +215,10 @@ import SkConfirm from '~/components/SkConfirm';
 import SkStoreActionsNavi from '~/components/SkStoreActionsNavi';
 import geo from '~/utils/geo';
 
+import {
+    VIcon
+} from 'vuetify/lib';
+
 
 const SkUserInfo = {
     name: 'SkUserInfo',
@@ -221,6 +227,9 @@ const SkUserInfo = {
             type: Object,
             required: true
         }
+    },
+    components: {
+        VIcon
     },
     computed: {
         geo(){
@@ -419,6 +428,12 @@ export default {
             };
             
             this.snackbar = sb;
+        },
+        rightNavi(val){
+            console.log('rightNavi', val);
+            if (val){
+                this.$refs["actionsNavi"].$fetch();
+            }
         },
         onOrder(){
             this.fDlgShopper = (new Date()).getTime();

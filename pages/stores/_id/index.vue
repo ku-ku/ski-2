@@ -91,7 +91,7 @@ export default {
         }
     },
     activated(){
-        if (!this.has.store){
+        if (!(!!this.has.store)){
             (async ()=>{
                 await this.$fetch();
             })();
@@ -277,18 +277,34 @@ export default {
                                })
                     );
                 }
+                const ll = this.$store.state.geo.ll;
+                var addr, dist;
+                if (!!this.fill){
+                    addr = this.fill.address;
+                    if (!!this.fill.lat){
+                        dist = geo.distance(ll, this.fill);
+                    }
+                } else {
+                    if (!!this.store.location) {
+                        addr = geo.a2s(this.store.location);
+                    }
+                    if (!!this.store.lat){
+                        dist = geo.distance(ll, this.store);
+                    }
+                }
+                if (!$utils.isEmpty(dist)){
+                    dist = ' (~' + ((dist < 1000) ? Math.round(dist) + 'м.)' : Math.round(dist/1000) + 'км.)');
+                }
+                
                 items.push(h('div', {class: "sk-location"}, [
                         h('a', {
                                 class: {'sk-addr': true}, style:{color: (!!bg) ? bg : '' },
                                 on: {click: this.onmap}
                             }, [
                                 h('sk-svg',{props: {xref:'#ico-map-marker', width: 16, height: 16}}),
-                                (!!this.fill) 
-                                    ? this.fill.address
-                                    : (!!this.store.location) 
-                                        ? geo.a2s(this.store.location) 
-                                        : 'на карте'
-                        ])
+                                $utils.isEmpty(addr) ? 'на карте' : addr,
+                                $utils.isEmpty(dist) ? '' : dist
+                            ])
                     ])
                 );
                 if (this.state === ST_MODES.qr){
