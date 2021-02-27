@@ -5,15 +5,15 @@
       class="sk-navigation"
       temporary
       app
+      dark
     >
         <v-list>
+            <v-list-item v-if="is.user" to="/profile/profile" class="sk-user-info">
+                <sk-user-info :user="user" />
+            </v-list-item>
             <v-list-item to="/">
                 <v-list-item-icon><v-icon>mdi-view-list</v-icon></v-list-item-icon>
                 <v-list-item-content>главная</v-list-item-content>
-            </v-list-item>
-            <v-list-item v-if="is.user" to="/profile/profile">
-                <v-list-item-icon><v-icon>mdi-account-details-outline</v-icon></v-list-item-icon>
-                <v-list-item-content>профиль</v-list-item-content>
             </v-list-item>
             <v-list-item v-if="is.anon" to="/profile/auth">
                 <v-list-item-icon><v-icon>mdi-account-arrow-left-outline</v-icon></v-list-item-icon>
@@ -30,8 +30,9 @@
         </v-list>
         <v-spacer></v-spacer>
         <div class="text-center mt-5">
-            <v-btn text small href="http://i.xn--80apggkpo6e.xn--p1ai/terms-of-use/" target="_blank">
-                <v-icon small>mdi-note-multiple-outline</v-icon>&nbsp;условия использования</v-btn>
+            <v-btn text x-small href="http://i.xn--80apggkpo6e.xn--p1ai/terms-of-use/" target="_blank">
+                условия использования
+            </v-btn>
         </div>
     </v-navigation-drawer>
     <v-app-bar
@@ -180,12 +181,49 @@ import SkShopper from '~/components/SkShopper';
 import SkPayment from '~/components/SkPayment';
 import SkConfirm from '~/components/SkConfirm';
 
+const SkUserInfo = {
+    name: 'SkUserInfo',
+    props: {
+        user: {
+            type: Object,
+            required: true
+        }
+    },
+    computed: {
+        geo(){
+            return this.$store.state.geo;
+        },
+        addr(){
+            var s = (!!this.user.adds) ? this.user.adds.addrstring || '' : '';
+            if ($utils.isEmpty(s)){
+                s = this.$store.getters["geo/city"];
+            }
+            return s;
+        }
+    },
+    render(h){
+        var addr = (!!this.user.adds) ? this.user.adds.addrstring || '' : '';
+        return h('div', {}, [
+            h('v-icon', {class: "sk-user-ava"}, "mdi-account-outline"),
+            h('div', {class: "sk-user-title"}, this.user.name),
+            h('div', {class: "sk-user-add"}, [
+                h('v-icon', {props: {small: true}}, this.geo.ll.fine ? 'mdi-map-marker-radius' : 'mdi-map-marker-outline'),
+                h('div', [
+                    this.addr,
+                    h('div', {class: ""}, 'профиль')
+                ])
+            ])
+        ]);
+    }
+};  //SkUserInfo
+
 export default {
     components: {
         SkConfirm,
         SkBasket,
         SkShopper,
-        SkPayment
+        SkPayment,
+        SkUserInfo
     },
     data(){
         return {
@@ -388,10 +426,59 @@ export default {
 }
 </script>
 <style lang="scss">
+    @import "~/assets/index.scss";
     .sk-navigation {
+        $grad: lighten($main-color, 20%) 0%, $main-color 100%;
+        background: $main-color;
+        background: -moz-linear-gradient(top,  $grad); 
+        background: -webkit-linear-gradient(top,  $grad); 
+        background: linear-gradient(to bottom,  $grad);
         & .v-navigation-drawer__content{
             display: flex;
             flex-direction: column;
+            & .v-list{
+                padding-top: 0 !important;
+                & .v-list-item{
+                    border-bottom: 1px solid lighten($main-color, 20%);
+                }
+                & .v-list-item--active{
+                    color: #fff;
+                }
+            }
+        }
+        & .sk-user-info{
+            background: $main-color;
+            border-bottom: 1px solid darken($main-color, 20%) !important;
+            width: 100%;
+            padding-top: 0.5rem;
+            padding-bottom: 0.5rem;
+            & div{
+                width: 100%;
+            }
+            & .v-icon.sk-user-ava{
+                font-size: 2rem;
+                display: block;
+                margin: 1rem auto;
+                text-align: center;
+                border: 1px solid #f2f2f2;
+                border-radius: 500px;
+                width: 64px;
+                height: 64px;
+                line-height: 56px;
+                box-shadow: 0 2px 4px rgba(0,0,0,0.22);
+            }
+            & .sk-user-title{
+                font-weight: 400;
+                font-size: 1.5rem;
+            }
+            & .sk-user-add{
+                font-size: 0.9rem;
+                display: flex;
+                align-items: center;
+                & > :first-child{
+                    margin-right: 0.5rem;
+                }
+            }
         }
     }
     .sk-app-snackbar{
