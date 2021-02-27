@@ -192,7 +192,11 @@ export default {
                                         }, [
                                             $utils.isEmpty(c.img)
                                                 ? null
-                                                : h('v-img', {props: {src: url + '/static/model/view/' + c.img}}),
+                                                : h('v-img', {props: {
+                                                        src: url + '/static/model/view/' + c.img,
+                                                        contain: true,
+                                                        "max-height": 86
+                                                    }}),
                                             h('v-card-text', c.name)
                                         ]);
                                     })
