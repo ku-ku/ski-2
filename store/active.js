@@ -9,6 +9,7 @@ const EMPTY_CAT = {
 export const state = () => ({
     store: null,
     actions: null,
+    groups: null,   //actions groups
     banners: null,
     fills: null,
     fill: null,
@@ -22,6 +23,7 @@ const mutations = {
         state.store  = null;
         state.banners= null;
         state.actions= null;
+        state.groups = null;
         state.fills  = null; 
         state.fill   = null;
         state.prod   = null;
@@ -32,6 +34,7 @@ const mutations = {
         //reset's
         state.banners= null;
         state.actions= null;
+        state.groups = null;
         state.fills  = null; 
         state.fill   = null;
         state.prod   = null;
@@ -40,6 +43,8 @@ const mutations = {
     setAdds(state, payload) {
         if (!!payload.actions){
             state.actions = payload.actions;
+        } else if (!!payload.groups){
+            state.groups = payload.groups;
         } else if (!!payload.banners){
             state.banners = payload.banners;
         } else if (!!payload.fills){
@@ -177,6 +182,33 @@ const actions = {
                         a.num = (!!a.num) ? Number(a.num) : 99999; //for sorting by category
                     });
                     store.commit('setAdds', {actions: acts});
+
+                    //buils action groups
+                    var n, _cats = [];
+                    acts.map( (a)=>{
+                            if ($utils.isEmpty(a.kindid)){return;}
+                            n = _cats.filter((c)=>{ return ( c.id === a.kindid); });
+                            if (n.length < 1){
+                                _cats.push({id: a.kindid, name: a.kindname, n: a.num});
+                            }
+                    });
+                    //set a cat image (first by action)
+                    _cats.map((c)=>{
+                        acts.filter((a)=>{
+                            return ((!!a.promoimage)&&(c.id === a.kindid)); 
+                        }).map((a, n)=>{
+                                if (n===0){
+                                c.img = a.promoimage.id;
+                            }
+                        });
+                    });
+                    _cats = _cats.sort((c1, c2)=>{
+                        return (c1.n === c2.n) 
+                                ? c1.name.localeCompare(c2.name)
+                                : c1.n < c2.n ? -1 : 1;
+                    });
+                    store.commit('setAdds', {groups: _cats});
+                    
                     resolve(acts);
                 }catch(e){
                     reject(e);
@@ -323,7 +355,7 @@ const getters = {
             case "ava":
                 return (!!state.store)&&(!!state.store.brandavatar) 
                         ? ski.$http.env.rpcUrl + '/static/model/view/' + state.store.brandavatar.id
-                        : null;
+                        : "/my-logo.png";
                     
         }
     }

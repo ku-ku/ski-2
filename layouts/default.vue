@@ -35,6 +35,32 @@
             </v-btn>
         </div>
     </v-navigation-drawer>
+    <v-navigation-drawer
+      v-model="rightDrawer"
+      class="sk-navigation-store"
+      temporary
+      app
+      right
+    >
+        <template v-slot:prepend>
+            <v-list  :color="ab.bg" :dark="ab.dark">
+                <v-list-item two-line v-if="is.store" @click.stop="rightDrawer=false">
+                    <v-list-item-avatar>
+                        <img :src="$store.getters['active/brand']('ava')" />
+                    </v-list-item-avatar>
+                    <v-list-item-content>
+                      <v-list-item-title>{{activeStore.title}}</v-list-item-title>
+                      <v-list-item-subtitle>{{geo.a2s(activeStore.location)}}</v-list-item-subtitle>
+                    </v-list-item-content>
+                </v-list-item>
+            </v-list>    
+        </template>
+        <v-divider></v-divider>        
+          <SkStoreActionsNavi 
+              @click="rightDrawer=false" 
+          />
+    </v-navigation-drawer>
+      
     <v-app-bar
       fixed
       app
@@ -60,8 +86,12 @@
           <sk-svg xref="#ico-signin" />
       </v-btn>
       <template v-else>
-          <div v-if="fAvaNeed && is.store">
-            <v-img :src="$store.getters['active/brand']('ava')" class="sk-store-logo"></v-img>
+          <div v-if="is.store">
+            <v-img v-if="fAvaNeed" :src="$store.getters['active/brand']('ava')" 
+                   class="sk-store-logo"
+                   @click.stop="rightDrawer = !rightDrawer"
+                   />
+            <v-app-bar-nav-icon v-else @click.stop="rightDrawer = !rightDrawer" />
           </div>
       </template>
     </v-app-bar>
@@ -180,6 +210,9 @@ import SkBasket from '~/components/SkBasket';
 import SkShopper from '~/components/SkShopper';
 import SkPayment from '~/components/SkPayment';
 import SkConfirm from '~/components/SkConfirm';
+import SkStoreActionsNavi from '~/components/SkStoreActionsNavi';
+import geo from '~/utils/geo';
+
 
 const SkUserInfo = {
     name: 'SkUserInfo',
@@ -230,6 +263,7 @@ export default {
             MODES: MODES,
             DISP_MODES: DISP_MODES,
             drawer: false,
+            rightDrawer: false,
             title: "<strong>" + APP_NAME + "</strong><br />приветствуем Вас!",
             ab: {
                 bg: 'default',
@@ -238,7 +272,8 @@ export default {
             snackbar: false,
             fDlgShopper: false,
             fDlgPayment: false,
-            fAvaNeed: false
+            fAvaNeed: false,
+            geo: geo
         };
     },
     provide(){
@@ -427,8 +462,10 @@ export default {
 </script>
 <style lang="scss">
     @import "~/assets/index.scss";
+    
+    $grad: lighten($main-color, 20%) 0%, $main-color 100%;
+    
     .sk-navigation {
-        $grad: lighten($main-color, 20%) 0%, $main-color 100%;
         background: $main-color;
         background: -moz-linear-gradient(top,  $grad); 
         background: -webkit-linear-gradient(top,  $grad); 

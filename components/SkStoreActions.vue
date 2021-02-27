@@ -70,33 +70,7 @@ export default {
     async fetch(){
         this.mode = MODES.loading;
         try {
-            var actions = [... await this.$store.dispatch("active/getActions")];
-            //get & sort categories
-            var n, _cats = [];
-            actions.map( (a)=>{
-                if ($utils.isEmpty(a.kindid)){
-                    return;
-                }
-                n = _cats.filter((c)=>{ return ( c.id === a.kindid); });
-                if (n.length < 1){
-                    _cats.push({id: a.kindid, name: a.kindname, n: a.num});
-                }
-            });
-            //set a cat image
-            _cats.map((c)=>{
-                actions.filter((a)=>{
-                    return ((!!a.promoimage)&&(c.id === a.kindid)); 
-                }).map((a, n)=>{
-                        if (n===0){
-                        c.img = a.promoimage.id;
-                    }
-                });
-            });
-            this.cats = _cats.sort((c1, c2)=>{
-                return (c1.n === c2.n) 
-                        ? c1.name.localeCompare(c2.name)
-                        : c1.n < c2.n ? -1 : 1;
-            });
+            var n, actions = [... await this.$store.dispatch("active/getActions")];
             this.actions = actions.sort((a1, a2) => {
                 //TODO: by & basket ( ? )
                 n = a1.num - a2.num;
@@ -104,6 +78,7 @@ export default {
                         ? ($utils.isEmpty(a1.kindname) ? 'xxx' : a1.kindname).localeCompare($utils.isEmpty(a2.kindname) ? 'xxx' : a2.kindname)
                         : n < 0 ? -1 : 1;
             });
+            this.cats = this.$store.state.active.groups;
                     
             this.mode = MODES.default;
             this.$emit("load", this.actions.length);  //TODO: when empty
