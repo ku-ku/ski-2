@@ -302,8 +302,8 @@ export default {
                                 attrs: {id: 'sk-find-totals'}
                 }, [ b ]);
                 childs.push(h('v-btn', {
-                                props: {icon: true, fab: true, fixed: true, dark: true},
-                                style: {top: "2px", right: "1rem", zIndex: 9},
+                                props: {icon: true, fab: true, fixed: true, dark: true, small: true},
+                                style: {top: "8px", right: "1rem", zIndex: 9, "background-color": color},
                                 on: {click: this.show_find_params}
                              }, [ b ])
                 );

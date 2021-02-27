@@ -15,6 +15,7 @@ const MONTHS = {
 };  //MONTHS
 
 import { MODES } from "~/utils/index.js";
+import { DISP_MODES } from "~/utils/index.js";
 
 import { 
         VCard,
@@ -96,6 +97,9 @@ export default {
                 }, 800);
             }
         },   //gocat
+        catbyid(id){
+            return this.cats.filter((c)=>{return c.id === id;})[0];
+        },
         month(m){
             return (!!m) ? MONTHS[Number(m)] : '';
         },
@@ -181,7 +185,7 @@ export default {
                 }
 
                 var dates, inCart,
-                    kind = 'xxx', numOf = 0;
+                    kindId = 'xxx', kind = null;
                 
                 this.actions.map((item)=>{
                     inCart = this.$store.getters["basket/has"](item.id);
@@ -194,15 +198,41 @@ export default {
                     }
                     
                     if (!$utils.isEmpty(item.kindid)){
-                        if (kind!==item.kindid){
-                            kind = item.kindid;
+                        if (kindId!==item.kindid){
+                            kindId = item.kindid;
+                            kind = this.catbyid(kindId);
+                            if (!!kind.mode){
+                                kind.mode = DISP_MODES.list;
+                            }
+                            
                             items.push(h('v-subheader', {
+                                key: 'cat-' + kind.id,
                                 props: {inset: true},
-                                attrs: {"data-cat-id": item.kindid},
+                                attrs: {"data-cat-id": kind.id},
                                 style: {color: bc}
-                            }, item.kindname));
+                            }, [
+                                kind.name,
+/*  TODO:                              
+                                h('v-btn', {
+                                            props: {
+                                                small: true, 
+                                                color: bc, 
+                                                icon: true
+                                            },
+                                            on: {click: ()=>{
+                                                    console.log('switch mode', kind);
+                                                    kind.mode = (kind.mode === DISP_MODES.cards) ? DISP_MODES.list : DISP_MODES.cards;
+                                            }}
+                                }, [h("v-icon", {props: {small: true}}, 
+                                        (kind.mode === DISP_MODES.cards) 
+                                            ? "mdi-card-text-outline"
+                                            : "mdi-checkbox-multiple-blank-outline")
+                                   ])
+*/                                            
+                            ]));
                         }
                     }
+                    
                     items.push(
                         h("v-list-item", {
                             key: 'act-' + item.id, 
@@ -289,7 +319,7 @@ export default {
             }
             & .v-btn{
                 right: 0;
-                z-index: 9;
+                z-index: 3;
                 top: -1rem;
                 color: #fff
             }

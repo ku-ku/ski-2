@@ -83,7 +83,7 @@ function setPadding(value, size) {
  */
 function formatDate(d, format) {
   d = new Date(d) || new Date();
-  return $moment(d).format(format || 'dd.MM.yyyy');
+  return $moment(d).format(format || 'DD.MM.YYYY');
 }
 
 /**
