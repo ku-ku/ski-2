@@ -5,6 +5,11 @@ export default {
         cardId: {
             type: String,
             required: true
+        },
+        height: {
+            type: Number,
+            required: false,
+            default: 200
         }
     },
     async fetch(){
@@ -19,9 +24,14 @@ export default {
                     cache: false,
                     data: JSON.stringify({id: this.cardId})
             });
+            if (!(!!data)){
+                throw {message: "noqr"};
+            }
             this.qr_bin_data = 'data:image/png;base64,'+ data; 
         } catch(err) {
             console.log('ERR on qr-code', err);
+            ski.msg({color:'warning', text: 'Не удается получить QR-код, попробуйте еще раз'});
+            this.$emit("no-qr");
         }
     },
     data(){
@@ -36,7 +46,10 @@ export default {
         }
     },
     render(h){
-        return h('div', {class: {'sk-qr-place': true}}, [
+        return h('div', {
+                    class: {'sk-qr-place': true},
+                    style: {height: this.height + "px"}
+                }, [
                     (!!this.qr_bin_data)
                         ? h('img', {
                                     attrs: {
@@ -54,13 +67,15 @@ export default {
 </script>
 <style lang="scss" scoped>
     .sk-qr-place{
-                text-align: center;
-                max-width: 220px;
-                margin: 0 auto;
-                & > *{
-                    margin: 0 auto;
-                    width: 100%;
-                    height: auto;
-                }
+        text-align: center;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: 200px;
+        & img {
+            max-width: 90%;
+            max-height: 200px;
+            height: auto;
+        }
     }
 </style>    

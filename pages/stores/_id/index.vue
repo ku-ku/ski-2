@@ -19,10 +19,9 @@ import SkBottom from '~/components/SkBottom';
 
 import SkMap from '@/components/map';
 
-import { 
-         Scroll
-} from 'vuetify/lib/directives';
+import { Scroll } from 'vuetify/lib/directives';
 
+const DEF_LOGO_H = 200;
 
 export default {
     props: ['id'],
@@ -59,7 +58,11 @@ export default {
             fill: null,
             sending: false,
             fab: false,
-            map: false
+            map: false,
+            logo: {
+                height: DEF_LOGO_H,
+                loading: MODES.loading
+            }
         };
     },
     fetchOnServer: false,
@@ -70,7 +73,6 @@ export default {
         try {
             const store = await this.$store.dispatch("loadStore", {id: id});
             this.store = store;
-            console.log('Active store', store);
             this.$store.commit("active/setStore", store);
             if (this.$store.getters["profile/is"]("user")){
                 this.$store.dispatch("loadCard", {by: "tenant", id: store.tenantid}).then((card)=>{
@@ -80,6 +82,8 @@ export default {
             }
             this.mode = MODES.default;
             this.state = ST_MODES.def;
+            this.logo.height = DEF_LOGO_H;
+            this.logo.loading= MODES.loading;
             this.see();
         } catch(e) {
             console.log("ERR on store", e);
@@ -109,7 +113,7 @@ export default {
             return _h;
         },
         bonuces(){
-            return (this.has.card) ? this.card.amount : null;
+            return 150; //(this.has.card) ? this.card.amount : null;
         }
     },
     methods:{
@@ -217,8 +221,11 @@ export default {
         const url = this.$http.env.rpcUrl;
         const bg = this.has.store ? this.store.brandcolor || "orange" : "default";
         const bc = this.has.store ? this.store.balancecolor || "#ffb300" : "default";
+        var bigLogo = ( 
+                            ((this.state===ST_MODES.def)&&(this.has.logo))
+                          ||((this.state===ST_MODES.qr)&&(!this.has.card))
+                      );
         var conte = [];
-        var noBigLogo = true;
         
         switch(this.mode){
             case MODES.loading:
@@ -229,33 +236,45 @@ export default {
                 break;
             case MODES.default:
                 var items = [];
-                if (this.has.logo){
+                //QR | logo - first
+                if (this.state===ST_MODES.qr){
+                    if (this.has.card){
+                        conte.push(
+                            h('sk-qr', {
+                                props: {cardId: this.card.id, height: Math.max(this.logo.height, DEF_LOGO_H)-32},
+                                on: { noqr: ()=>{this.state=ST_MODES.def;}}
+                            })
+                        );
+                        if (!!this.bonuces) {
+                            conte.push(h('div', {class: "sk-bonuces",
+                                                 style: {color: bg}}, 
+                                         this.bonuces + " бонусов")
+                                      );
+                        }
+                    }   //if (this.has.card
+                } 
+                if (bigLogo){
                     const src= url + '/static/model/view/' + this.store.brandlogo.id;
-                    noBigLogo= !((this.state===ST_MODES.def)||(this.state===ST_MODES.qr));
-                    conte.push( ((this.state===ST_MODES.def)||(this.state===ST_MODES.qr))
-                                ? h('v-img', {
+                    conte.push(h('v-img', {
                                     props: {
                                                 src: src, 
-                                                width:'100%', height:'auto', 
-                                                eager: true
+                                                width:'100%', 
+                                                "min-height": 100,
+                                                height:'auto',
+                                                eager: true,
+                                                alt: this.store.title
                                            },
                                     class: {"sk-store-brand": true},
                                     ref: "store-img",
                                     on: {
-                                            load: ()=>{$(this.$refs["store-img"].$el).animate({opacity: 1});}
+                                            load: ()=>{
+                                                const img = $(this.$refs["store-img"].$el);
+                                                this.logo.height = img.height();
+                                                img.animate({opacity: 1, duration: 600});
+                                                this.logo.loading = false;
+                                            }   //load
                                         }
-                                    }, [
-                                        (!!this.bonuces) 
-                                            ? h('div', {
-                                                class: "sk-bonuces",
-                                                style: {color: bc}
-                                            }, "" + this.bonuces)
-                                            : null
-                                    ])
-                                : h('div', {
-                                    class: {"sk-store-brand": true, "sk-thumbinal": true},
-                                    style: {backgroundImage: 'url("' + src + '")'}
-                                })
+                               })
                     );
                 }
                 items.push(h('div', {class: "sk-location"}, [
@@ -272,41 +291,31 @@ export default {
                         ])
                     ])
                 );
-                switch( this.state ){
-                    case ST_MODES.def:
-                    case ST_MODES.qr:
-                        if (this.state === ST_MODES.qr){
-                            if (this.has.card){
-                                items.push(h('sk-qr', {props: {cardId: this.card.id}}));
-                            } else {
-                                if (!$utils.isEmpty(this.store.loyalty)){
-                                    items.push( h('h3', {class: {'sk-loyalty': true}, domProps: {innerHTML: this.store.loyalty}}) );
-                                }
-                                items.push( h('div', {class: {'sk-takes': true}}, [
-                                        h('v-btn', {
-                                                        class: {'sk-take': true},
-                                                        props: {outlined: true, loading: this.sending},
-                                                        on:    {click: this.takecard}
-                                                    }, 'Стать клиентом')
-                                ]));
-                            }
+                if (this.state === ST_MODES.qr){
+                    if (!this.has.card){
+                        if (!$utils.isEmpty(this.store.loyalty)){
+                            items.push( h('h3', {class: {'sk-loyalty': true}, domProps: {innerHTML: this.store.loyalty}}) );
                         }
-                        items.push(h('sk-store-banners', {props: {store: this.store}}));
-                        items.push(h('sk-store-actions', {props: {store: this.store}}));
-                        
-                        break;
+                        items.push( h('div', {class: {'sk-takes': true}}, [
+                                h('v-btn', {
+                                                class: {'sk-take': true},
+                                                props: {outlined: true, loading: this.sending},
+                                                on:    {click: this.takecard}
+                                            }, 'Стать клиентом')
+                        ]));
+                    }
                 }
+                items.push(h('sk-store-banners', {props: {store: this.store}}));
+                items.push(h('sk-store-actions', {props: {store: this.store}}));
                 
                 conte.push(h('v-card-text', [
                     h(SkStoreNavi, {
                         props: {store: this.store, has: this.has, value: this.state},
                         on: {state: (s)=>{this.state = s;}},
-                        style: {marginTop: noBigLogo ? 'initial' : '-36px'}
+                        style: {marginTop: (this.state === ST_MODES.def) ? '-36px': '0'}
                     }),
                     items
                 ]));
-                
-                
                 break;
         }
         
@@ -390,13 +399,8 @@ export default {
             }
         }
         & .sk-bonuces{
-            position: absolute;
-            top: 1rem;
-            right: 1rem;
-            font-size: 1.125rem;
-            padding: 0.25rem 0.75rem;
-            border-radius: 4px;
-            background-color: rgba(0,0,0,0.05);
+            font-size: 1rem;
+            text-align: center;
         }
         & .sk-location{
             margin-top: 1rem;
