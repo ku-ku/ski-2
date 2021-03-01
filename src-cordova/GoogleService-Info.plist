@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>CLIENT_ID</key>
+	<string>349717391015-sbbipdd7jv7facpin804qod0papp5t98.apps.googleusercontent.com</string>
+	<key>REVERSED_CLIENT_ID</key>
+	<string>com.googleusercontent.apps.349717391015-sbbipdd7jv7facpin804qod0papp5t98</string>
+	<key>API_KEY</key>
+	<string>AIzaSyBofI1eMVvJJfpDsOIjpaUveMATpkwqB2Y</string>
+	<key>GCM_SENDER_ID</key>
+	<string>349717391015</string>
+	<key>PLIST_VERSION</key>
+	<string>1</string>
+	<key>BUNDLE_ID</key>
+	<string>skidos.my.ru</string>
+	<key>PROJECT_ID</key>
+	<string>skidos-8640f</string>
+	<key>STORAGE_BUCKET</key>
+	<string>skidos-8640f.appspot.com</string>
+	<key>IS_ADS_ENABLED</key>
+	<false></false>
+	<key>IS_ANALYTICS_ENABLED</key>
+	<false></false>
+	<key>IS_APPINVITE_ENABLED</key>
+	<true></true>
+	<key>IS_GCM_ENABLED</key>
+	<true></true>
+	<key>IS_SIGNIN_ENABLED</key>
+	<true></true>
+	<key>GOOGLE_APP_ID</key>
+	<string>1:349717391015:ios:c42356782a90e8fdb39d82</string>
+	<key>DATABASE_URL</key>
+	<string>https://skidos-8640f.firebaseio.com</string>
+</dict>
+</plist>
