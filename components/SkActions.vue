@@ -26,7 +26,10 @@ const ActItem = {
     computed: {
         imgId(){
             return this.action.promoimage.id;
-        }   //imgId
+        }, 
+        addr(){
+            return (!!this.action.location) ? $utils.formatAddress(this.action.location) : '';
+        }
     },      //computed
     render(h){
         const url = this.$http.env.rpcUrl;
@@ -39,12 +42,12 @@ const ActItem = {
         }, [
             h('v-card-title', [
                 $utils.isEmpty(this.action.orgname) ? this.action.mainorgname : this.action.orgname,
-                (!!this.action.location) 
-                    ? h('div', {class: "sk-address"}, [
+                $utils.isEmpty(this.addr) 
+                    ? '' 
+                    : h('div', {class: "sk-address"}, [
                         h('v-icon', {props: {small: true}}, "mdi-map-marker-outline"),
-                        $utils.formatAddress(this.action.location)
+                        this.addr
                       ])
-                    : null
             ]),
             h('v-img', {
                 props: {
@@ -84,26 +87,23 @@ export default {
             const acts = await this.$store.dispatch("loadActions");
             var _acts = [];
             acts.map((a)=>{
-                var _dist = -1,
-                    _loc  = null;
-                
                 //don`t use without image
                 if (!(!!a.promoimage)) {   
                     return;
                 }
+                
                 //don`t use non needs (my-cards & nears)
-                if (all.filter((n)=>{
-                    if ((n.id === a.mainorgid)||(n.tenantid===a.tenantid)){
-                        _dist = n.distance;
-                        _loc  = n.location;
-                        return true;
-                    }
-                    return false;
-                }) < 1){
+                var _all = all.filter((store)=>{
+                    var _id = (!!a.mainorgid) ? a.mainorgid : a.tenantid;
+                    return ((_id === store.id)||(_id === store.tenantid));
+                });
+                if (_all.length < 1){
                     return;
                 }
-                _acts.push(Object.assign({distance: _dist, location: _loc}, a));
+                
+                _acts.push(Object.assign({distance: _all[0].distance, location: _all[0].location}, a));
             });
+            
             this.actions = _acts.sort((a1, a2)=>{
                 if (!(!!a1.distance)){
                     return (!!a2.distance) ? -1 : 1;

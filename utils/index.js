@@ -107,8 +107,6 @@ function formatAddress(address, cityOnly) {
         }
     }
     return _a.join(', ');
-
-  return result.replace(/,\s$/, '');
 }
 
 function short(s){
