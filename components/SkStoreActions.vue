@@ -128,14 +128,12 @@ export default {
             case MODES.default:
                 const url = this.$http.env.rpcUrl;
                 const bc  = this.store.brandcolor || 'orange';
-                if ((this.cats)&&(this.cats.length>1)){
+                if ((this.cats)&&(this.cats.length > 1)){
                     const b = h('v-btn', {
                                             props: {
                                                 small: true, 
                                                 color: bc, 
-                                                icon: this.chips, 
-                                                fab: !this.chips,
-                                                absolute: !this.chips
+                                                icon: true 
                                             },
                                             on: {click: ()=>{this.chips = !this.chips;}}
                               }, [h("v-icon", {props: {}}, "mdi-dots-vertical")]);
@@ -145,7 +143,9 @@ export default {
                             class: 'sk-store-cats px-0'
                         }, [
                             this.chips 
-                                ? [h('v-list-item-content', [
+                                ? [
+                                    h('v-list-item-action', {class: "mr-0"}, [ b ]),
+                                    h('v-list-item-content', [
                                         h('v-chip-group', {
                                             class: {'sk-cats': true},
                                             props: {'show-arrows': false}
@@ -158,11 +158,10 @@ export default {
                                                 }, c.name);
                                             })
                                         ])
-                                    ]),
-                                    h('v-list-item-action', [ b ])
+                                    ])
                                 ]
                                 : h('div', {class: {'sk-cats-cards': true}}, [
-                                    b,
+                                    h('div', {class: 'h3'}, [b, h('span', 'категории')]),
                                     this.cats.map((c)=>{
                                         return h('v-card', {
                                             key: 'card-' + c.id,
@@ -308,6 +307,19 @@ export default {
             align-items: stretch;
             justify-content: space-around;
             width: 100%;
+            & .h3{
+                font-weight: 300;
+                font-size: 1.25rem;
+                font-style: italic;
+                padding: 1rem 1rem 0.5rem 0;
+                width: 100%;
+                display: flex;
+                justify-content: flex-start;
+                align-items: center;
+                & .v-btn{
+                    color: #fff
+                }
+            }
             & .v-card{
                 width: calc(50% - 1rem);
                 margin: 0 0.5rem 1rem 0;
@@ -316,12 +328,6 @@ export default {
                 & .v-card__text{
                     line-height: 1.125;
                 }
-            }
-            & .v-btn{
-                right: 0;
-                z-index: 3;
-                top: -1rem;
-                color: #fff
             }
         }
         
