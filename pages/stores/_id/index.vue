@@ -113,7 +113,7 @@ export default {
             return _h;
         },
         bonuces(){
-            return 150; //(this.has.card) ? this.card.amount : null;
+            return (this.has.card) ? this.card.amount : null;
         }
     },
     methods:{

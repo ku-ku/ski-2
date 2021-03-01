@@ -152,7 +152,10 @@ export default {
         show(val){
             if (!!val){
                 const {user} = this.$store.state.profile;
-                this.shopper.name = (!!user) ? user.name : '';
+                this.shopper.name = (!!user) 
+                                        ? /anoni/.test(user.name) 
+                                            ? '' : user.name
+                                        : '';
                 this.shopper.phone=  (!!user.adds) ? user.adds.phone : '';
                 this.shopper.self = this.hasDeliv 
                                         ? (!!user.adds)&&(typeof user.adds.self !== "undefined") 
