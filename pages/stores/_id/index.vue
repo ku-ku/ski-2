@@ -70,6 +70,9 @@ export default {
         this.mode = MODES.loading;
         this.card = null;   //reset
         const id = this.$route.params.id;
+        
+        
+        
         try {
             const store = await this.$store.dispatch("loadStore", {id: id});
             this.store = store;

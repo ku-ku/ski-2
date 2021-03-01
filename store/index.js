@@ -130,6 +130,8 @@ export const actions = {
                 break;
         }
         
+        const uid = store.rootGetters["profile/get"]("id"); 
+        
         return new Promise((resolve, reject)=>{
             (async ()=>{
                 try {
@@ -138,8 +140,28 @@ export const actions = {
                         throw res.error;
                     }
                     if (res.result.data.length > 0){
-                        const data = $utils.sin2obj(res.result.columnIndexes, res.result.data[0]);
-                        resolve(data);
+                        const card = $utils.sin2obj(res.result.columnIndexes, res.result.data[0]);
+                        //refresh card bonuces
+                        try {
+                            var res = await this.$http.post({
+                                type: 'api-call',
+                                url: '/skidosapi/account',
+                                contentType: 'application/json;charset=utf-8',
+                                dataType: 'text',
+                                data: JSON.stringify({userid: uid, tenantid: card.tenantid}),
+                                processData: false
+                            });
+                            if ( !!res.success ) {
+                                console.log('No card bonuces avail');
+                            } else {
+                                if ( Number(res.balance) > 0 ) {
+                                    card.amount = res.balance;
+                                }
+                            }
+                        } catch(e){
+                            console.log('Err on refresh account balance:', e);
+                        }
+                        resolve(card);
                     } else {
                         resolve(null);
                     }
