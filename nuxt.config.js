@@ -25,7 +25,8 @@ export default {
     ],
     script: [
         { src: "https://code.jquery.com/jquery-3.5.1.min.js", integrity: "sha256-9/aliU8dGd2tb6OSsuzixeV4y/faTqgFtohetphbbj0=", crossorigin: "anonymous" },
-        { src: "https://api.mapbox.com/mapbox-gl-js/v1.10.1/mapbox-gl.js" }
+        { src: "https://api.mapbox.com/mapbox-gl-js/v1.10.1/mapbox-gl.js" },
+        { src: '/cordova.js', type: 'text/javascript' }
     ]
   },
 
