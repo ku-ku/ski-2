@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "349717391015",
+    "firebase_url": "https://skidos-8640f.firebaseio.com",
+    "project_id": "skidos-8640f",
+    "storage_bucket": "skidos-8640f.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:349717391015:android:7619a45674169eb0b39d82",
+        "android_client_info": {
+          "package_name": "skidos.my.ru"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "349717391015-u51r6js6aia61a2t23rn994h71106spd.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyA5Eo9iEkZyn0rr5c3-NRsx8ZVBVrBlTIE"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "349717391015-u51r6js6aia61a2t23rn994h71106spd.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

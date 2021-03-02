@@ -5,7 +5,9 @@ console.log('process mode: ' + process.env.NODE_ENV);
 
 export default {
   ssr: false,
-
+  generate: {
+    dir: "www"
+  },
   head: {
     titleTemplate: '%s - моикарты',
     title: 'моикарты.рф',
@@ -26,7 +28,7 @@ export default {
     script: [
         { src: "https://code.jquery.com/jquery-3.5.1.min.js", integrity: "sha256-9/aliU8dGd2tb6OSsuzixeV4y/faTqgFtohetphbbj0=", crossorigin: "anonymous" },
         { src: "https://api.mapbox.com/mapbox-gl-js/v1.10.1/mapbox-gl.js" },
-        { src: '/cordova.js', type: 'text/javascript' }
+        { src: "cordova.js" }
     ]
   },
 
@@ -50,9 +52,9 @@ export default {
       '@nuxtjs/style-resources'
   ],
   env: {
-      rpcUrl:  (/^dev/.test(process.env.NODE_ENV)) ? '/rpc' : '//моикарты.рф/rpc',
-      backUrl: (/^dev/.test(process.env.NODE_ENV)) ? '/wp'  : '//i.моикарты.рф',
-      apiUrl:  (/^dev/.test(process.env.NODE_ENV)) ? '/api' : '//моикарты.рф/api/skidosapi',
+      rpcUrl:  (/^dev/.test(process.env.NODE_ENV)) ? '/rpc' : 'https://моикарты.рф/rpc',
+      backUrl: (/^dev/.test(process.env.NODE_ENV)) ? '/wp'  : 'https://i.моикарты.рф',
+      apiUrl:  (/^dev/.test(process.env.NODE_ENV)) ? '/api' : 'https://моикарты.рф/api/skidosapi',
       wsUrl: 'wss://моикарты.рф/notice',
       pushSndId: 349717391015
   },
@@ -106,6 +108,7 @@ export default {
   },
 
 build: {
+    publicPath: "/nuxt/",
     plugins: [
         new webpack.ProvidePlugin({
           '$utils': path.resolve(__dirname, 'utils/index.js'),
@@ -128,5 +131,8 @@ build: {
             ]}
         })
     ]
-  }
+  },
+router: {
+  mode: "hash"
+}
 }
