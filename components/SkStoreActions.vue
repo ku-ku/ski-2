@@ -104,10 +104,8 @@ export default {
             return (!!m) ? MONTHS[Number(m)] : '';
         },
         onorder(item){
+            console.log('onorder', item);
             this.$router.push({path: "/stores/" + this.store.id + "/catalog/" + item.nameid});
-        },
-        frombasket(e, id){
-            
         }
     },
     render(h){
@@ -172,7 +170,6 @@ export default {
                                                 ? null
                                                 : h('v-img', {props: {
                                                         src: url + '/static/model/view/' + c.img,
-                                                        contain: true,
                                                         "max-height": 86
                                                     }}),
                                             h('v-card-text', c.name)
@@ -234,8 +231,7 @@ export default {
                     
                     items.push(
                         h("v-list-item", {
-                            key: 'act-' + item.id, 
-                            props: {},
+                            key: 'act-' + item.id,
                             on: {click: ()=>{
                                     (!!this.store.hasonline) ? this.onorder(item) : void(0);
                             }}
@@ -323,11 +319,17 @@ export default {
             & .v-card{
                 width: calc(50% - 1rem);
                 margin: 0 0.5rem 1rem 0;
-                & .v-img{
+                & .v-image{
+                    & .v-image__image{
+                        background-size: cover !important;
+                    }
                 }
                 & .v-card__text{
                     line-height: 1.125;
                 }
+            }
+            & .v-card:nth-child(2n+1){
+                margin-right: 0;
             }
         }
         
