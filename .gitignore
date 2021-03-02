@@ -70,6 +70,7 @@ typings/
 
 # Nuxt generate
 dist
+www
 
 # vuepress build output
 .vuepress/dist
@@ -91,6 +92,7 @@ sw.*
 /nbproject/private/
 
 # Cordova
+src-cordova
 /src-cordova/platforms
 /src-cordova/plugins
 /public/cordova.js

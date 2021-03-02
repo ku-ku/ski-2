@@ -65,7 +65,7 @@ export default {
             mode: MODES.none,
             cats: [],
             actions: null,
-            chips: true
+            chips: true     /* display: chips & list or cards */
         };
     },
     async fetch(){
@@ -106,6 +106,14 @@ export default {
         onorder(item){
             console.log('onorder', item);
             this.$router.push({path: "/stores/" + this.store.id + "/catalog/" + item.nameid});
+        },
+        frombasket(e, id){
+            if (e){
+                e.preventDefault();
+                e.stopPropagation();
+            }
+            this.$store.dispatch('basket/rm', {id: id});
+            return false;
         }
     },
     render(h){
@@ -134,7 +142,7 @@ export default {
                                                 icon: true 
                                             },
                                             on: {click: ()=>{this.chips = !this.chips;}}
-                              }, [h("v-icon", {props: {}}, "mdi-dots-vertical")]);
+                              }, [h("v-icon", {props: {}}, this.chips ? "mdi-checkbox-multiple-blank-outline" : "mdi-dots-vertical")]);
 
                     items.push( h('v-list-item', {
                             key: 'store-cats-' + this.store.id,
@@ -159,7 +167,7 @@ export default {
                                     ])
                                 ]
                                 : h('div', {class: {'sk-cats-cards': true}}, [
-                                    h('div', {class: 'h3'}, [b, h('span', 'категории')]),
+                                    h('div', {class: 'h3', style:{color: bc}}, [b, h('span', 'категории')]),
                                     this.cats.map((c)=>{
                                         return h('v-card', {
                                             key: 'card-' + c.id,
@@ -207,83 +215,107 @@ export default {
                                 attrs: {"data-cat-id": kind.id},
                                 style: {color: bc}
                             }, [
-                                kind.name,
-/*  TODO:                              
-                                h('v-btn', {
-                                            props: {
-                                                small: true, 
-                                                color: bc, 
-                                                icon: true
-                                            },
-                                            on: {click: ()=>{
-                                                    console.log('switch mode', kind);
-                                                    kind.mode = (kind.mode === DISP_MODES.cards) ? DISP_MODES.list : DISP_MODES.cards;
-                                            }}
-                                }, [h("v-icon", {props: {small: true}}, 
-                                        (kind.mode === DISP_MODES.cards) 
-                                            ? "mdi-card-text-outline"
-                                            : "mdi-checkbox-multiple-blank-outline")
-                                   ])
-*/                                            
+                                kind.name
                             ]));
                         }
                     }
                     
                     items.push(
                         h("v-list-item", {
-                            key: 'act-' + item.id,
-                            on: {click: ()=>{
-                                    (!!this.store.hasonline) ? this.onorder(item) : void(0);
-                            }}
+                                key: 'act-' + item.id,
+                                on: {click: ()=>{
+                                        (!!this.store.hasonline) ? this.onorder(item) : void(0);
+                                }}
                         }, [
-                            h('v-list-item-icon', {class:{"mr-3": true}}, [
-                                    (!!item.promoimage) 
-                                        ? h('v-img',{props: {
-                                                                src: url + '/static/model/view/' + item.promoimage.id,
-                                                                "max-height": 86,
-                                                                contain: true
-                                                            }})
-                                        : null,
-                                    (dates)
-                                        ? h('div', {class: {'sk-dates': true}}, dates)
-                                        : null
-                            ]), /* v-list-item-icon */
-                            h('v-list-item-content', [
-                                h('div',{class:{'sk-name': true}}, [ item.promogoods ]),
-                                h('div',{class:{'sk-price': true}}, [
-                                    $utils.isEmpty(item.newprice) ? null : item.newprice,
-                                    $utils.isEmpty(item.oldprice) ? null : h('span', {class:{'sk-old': true}}, item.oldprice),
-                                    h('div', {class: {"sk-units": true}}, 'руб.' +
-                                        ($utils.isEmpty(item.unitname) ? '' : ' (' + item.unitname + ')')
-                                    )
-                                ]),
-                                $utils.isEmpty(item.promoproducer)
-                                    ? null
-                                    : h('div', {class: {"sk-produ": true}}, item.promoproducer),
-                                inCart 
-                                    ? h('div', {class: {"sk-from-basket": true}}, [
-                                        h('v-btn', {
-                                            props: {outlined: true, color: 'default', 'x-small': true, rounded: true},
-                                                    on: { click: ()=>{this.frombasket(event, item.id);} }
-                                        }, 'убрать из корзины')
-                                      ])
-                                      : null
-                                ]), /* v-list-item-content */
-                                (!!this.store.hasonline) 
-                                    ? h('v-list-item-action',  [
+                            this.chips
+                                ? [h('v-list-item-icon', {class:{"mr-3": true}}, [
+                                        (!!item.promoimage) 
+                                            ? h('v-img',{props: {
+                                                                    src: url + '/static/model/view/' + item.promoimage.id,
+                                                                    "max-height": 86,
+                                                                    contain: true
+                                                                }})
+                                            : null,
+                                        (dates)
+                                            ? h('div', {class: {'sk-dates': true}}, dates)
+                                            : null
+                                    ]), /* v-list-item-icon */
+                                    h('v-list-item-content', [
+                                        h('div',{class:{'sk-name': true}}, [ item.promogoods ]),
+                                        h('div',{class:{'sk-price': true}}, [
+                                            $utils.isEmpty(item.newprice) ? null : item.newprice,
+                                            $utils.isEmpty(item.oldprice) ? null : h('span', {class:{'sk-old': true}}, item.oldprice),
+                                            h('div', {class: {"sk-units": true}}, 'руб.' +
+                                                ($utils.isEmpty(item.unitname) ? '' : ' (' + item.unitname + ')')
+                                            )
+                                        ]),
+                                        $utils.isEmpty(item.promoproducer)
+                                            ? null
+                                            : h('div', {class: {"sk-produ": true}}, item.promoproducer),
                                         inCart 
-                                            ? h('div', {class: {"sk-in-cart": true}}, [
-                                                    h('sk-svg', {props:{xref: "#ico-cart"}})
+                                            ? h('div', {class: {"sk-from-basket": true}}, [
+                                                h('v-btn', {
+                                                    props: {outlined: true, color: 'default', 'x-small': true, rounded: true},
+                                                            on: { click: ()=>{this.frombasket(event, item.id);} }
+                                                }, 'убрать из корзины')
                                               ])
-                                            : h('sk-svg', {props:{xref: "#ico-right"}})
-                                      ])    /* v-list-item-action */
-                                    : null
-                    ]));
+                                              : null
+                                        ]), /* v-list-item-content */
+                                        (!!this.store.hasonline) 
+                                            ? h('v-list-item-action',  [
+                                                inCart 
+                                                    ? h('div', {class: {"sk-in-cart": true}}, [
+                                                            h('sk-svg', {props:{xref: "#ico-cart"}})
+                                                      ])
+                                                    : h('sk-svg', {props:{xref: "#ico-right"}})
+                                              ])    /* v-list-item-action */
+                                            : null
+                                ]
+                                : h("v-card", {
+                                    props: {
+                                                width: "100%"
+                                           }
+                                }, [
+                                    (!!item.promoimage) 
+                                        ? h('v-img', {props: {
+                                                                src: url + '/static/model/view/' + item.promoimage.id,
+                                                                "max-height": 180
+                                                     }}, [
+                                                        h('div', {class:{'sk-name': true}}, [ item.promogoods ]),
+                                                        inCart 
+                                                            ? h('div', {class: {"sk-in-cart": true}}, [
+                                                                    h('sk-svg', {props:{xref: "#ico-cart"}})
+                                                              ])
+                                                            : null
+                                                     ])
+                                        : null,
+                                        h('v-card-text', [
+                                            h('div',{class:{'sk-price': true}}, [
+                                                $utils.isEmpty(item.newprice) ? null : item.newprice,
+                                                $utils.isEmpty(item.oldprice) ? null : h('span', {class:{'sk-old': true}}, item.oldprice),
+                                                h('div', {class: {"sk-units": true}}, 'руб.' +
+                                                    ($utils.isEmpty(item.unitname) ? '' : ' (' + item.unitname + ')')
+                                                )
+                                            ]),
+                                            $utils.isEmpty(item.promoproducer)
+                                                ? null
+                                                : h('div', {class: {"sk-produ": true}}, item.promoproducer),
+                                            inCart 
+                                                ? h('div', {class: {"sk-from-basket": true}}, [
+                                                    h('v-btn', {
+                                                        props: {outlined: true, color: 'default', 'x-small': true, rounded: true},
+                                                                on: { click: ()=>{this.frombasket(event, item.id);} }
+                                                    }, 'убрать из корзины')
+                                                  ])
+                                                  : null
+                                        ])
+                                ])  /* h("v-card"... */
+                            ]));
                 });
         }   //switch
         return h('v-list', {
             key: 'list-acts-' + this.store.id, 
-            class: {"sk-store-actions": true},
+            class: {"sk-store-actions": true, "sk-cards-mode": !this.chips},
             props: {subheader: true}
         }, items);
     }
@@ -294,45 +326,6 @@ export default {
     
     .sk-store-actions{
         margin-top: 1rem;
-        & .sk-cats{
-        }
-        & .sk-cats-cards{
-            position: relative;
-            display: flex;
-            flex-wrap: wrap;
-            align-items: stretch;
-            justify-content: space-around;
-            width: 100%;
-            & .h3{
-                font-weight: 300;
-                font-size: 1.25rem;
-                font-style: italic;
-                padding: 1rem 1rem 0.5rem 0;
-                width: 100%;
-                display: flex;
-                justify-content: flex-start;
-                align-items: center;
-                & .v-btn{
-                    color: #fff
-                }
-            }
-            & .v-card{
-                width: calc(50% - 1rem);
-                margin: 0 0.5rem 1rem 0;
-                & .v-image{
-                    & .v-image__image{
-                        background-size: cover !important;
-                    }
-                }
-                & .v-card__text{
-                    line-height: 1.125;
-                }
-            }
-            & .v-card:nth-child(2n+1){
-                margin-right: 0;
-            }
-        }
-        
         margin-bottom: 180px;
         & .v-subheader{
             font-weight: 300;
@@ -408,22 +401,87 @@ export default {
                 width: 18px;
                 height: 18px;
             }
-            & .sk-in-cart{
-                width: 32px;
-                height: 32px;
-                line-height: 38px;
-                text-align: center;
-                border-radius: 50%;
-                border: 2px solid #fff;
-                box-shadow: 0 2px 4px rgba(0,0,0,0.18);
-                background: $main-color;
-                & svg{
-                    width: 18px;
-                    height: 18px;
-                    margin: 0 auto;
-                    color: #fff;
-                }
+        }
+        & .sk-in-cart{
+            width: 32px;
+            height: 32px;
+            line-height: 38px;
+            text-align: center;
+            border-radius: 50%;
+            border: 2px solid #fff;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.18);
+            background: $main-color;
+            & svg{
+                width: 18px;
+                height: 18px;
+                margin: 0 auto;
+                color: #fff;
             }
         }
+        &.sk-cards-mode{
+            & .v-list-item{
+                border-bottom: 0 none;
+                margin-bottom: 1rem;
+                & .v-card{
+                    & .v-image{
+                        width: 100%;
+                        position: relative;
+                    }
+                    & .sk-name{
+                        background: rgba(0,0,0,0.22) scroll 0 0 repeat;
+                        font-size: 1.25rem;
+                        bottom: 0;
+                        position: absolute;
+                        padding: 1rem;
+                        color: #fff;
+                        text-shadow: 0 2px 4px rgba(0,0,0,0.22);
+                        width: 100%;
+                    }
+                    & .sk-in-cart{
+                        position: absolute;
+                        top: 0.5rem;
+                        right: 0.5rem;
+                    }
+                }
+            }
+            
+        }
+        & .sk-cats-cards{
+            position: relative;
+            display: flex;
+            flex-wrap: wrap;
+            align-items: stretch;
+            justify-content: space-around;
+            width: 100%;
+            & .h3{
+                font-weight: 300;
+                font-size: 1.25rem;
+                font-style: italic;
+                padding: 1rem 1rem 0.5rem 0;
+                width: 100%;
+                display: flex;
+                justify-content: flex-start;
+                align-items: center;
+                & .v-btn{
+                    color: #fff
+                }
+            }
+            & .v-card{
+                width: calc(50% - 1rem);
+                margin: 0 0.5rem 1rem 0;
+                & .v-image{
+                    & .v-image__image{
+                        background-size: cover !important;
+                    }
+                }
+                & .v-card__text{
+                    line-height: 1.125;
+                }
+            }
+            & .v-card:nth-child(2n+1){
+                margin-right: 0;
+            }
+        }   /* sk-cats-cards */
+        
     }
 </style>

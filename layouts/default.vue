@@ -478,10 +478,11 @@ export default {
 <style lang="scss">
     @import "~/assets/index.scss";
     
-    $grad: lighten($main-color, 20%) 0%, $main-color 100%;
+    $navi-color: $red-color; /*$main-color*/
+    $grad: lighten($navi-color, 20%) 0%, $navi-color 100%;
     
     .sk-navigation {
-        background: $main-color;
+        background: $navi-color;
         background: -moz-linear-gradient(top,  $grad); 
         background: -webkit-linear-gradient(top,  $grad); 
         background: linear-gradient(to bottom,  $grad);
@@ -491,7 +492,7 @@ export default {
             & .v-list{
                 padding-top: 0 !important;
                 & .v-list-item{
-                    border-bottom: 1px solid lighten($main-color, 20%);
+                    border-bottom: 1px solid lighten($navi-color, 20%);
                 }
                 & .v-list-item--active{
                     color: #fff;
@@ -499,8 +500,6 @@ export default {
             }
         }
         & .sk-user-info{
-            background: $main-color;
-            border-bottom: 1px solid darken($main-color, 20%) !important;
             width: 100%;
             padding-top: 0.5rem;
             padding-bottom: 0.5rem;
