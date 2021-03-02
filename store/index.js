@@ -50,6 +50,7 @@ export const actions = {
                     }
                     const data = $utils.sin2objA(res.result.columnIndexes, res.result.data);
                     data.map((item)=>{
+                        item.my = my;
                         item.distance = distance({lat: item.lat, lon: item.lon});
                     });
                     commit("setStores", {my: my, data: data});

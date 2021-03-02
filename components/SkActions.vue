@@ -32,7 +32,9 @@ const ActItem = {
         }
     },      //computed
     render(h){
-        const url = this.$http.env.rpcUrl;
+        const url = this.$http.env.rpcUrl,
+              dist= Number(this.action.distance);
+      
         return h("v-card", {
             props: {
                 width: "100%",
@@ -46,7 +48,14 @@ const ActItem = {
                     ? '' 
                     : h('div', {class: "sk-address"}, [
                         h('v-icon', {props: {small: true}}, "mdi-map-marker-outline"),
-                        this.addr
+                        this.addr 
+                        /*,
+                        (dist > 0) 
+                            ? ' (~' + ((dist < 1000) 
+                                            ? Math.round(dist) + 'м.' 
+                                            : Math.round(dist/1000) + 'км.') + ')'
+                            : ''
+                        */
                       ])
             ]),
             h('v-img', {
@@ -83,7 +92,7 @@ export default {
                                 return store.distance < 10000;
                             })
                         ];
-            
+            const ids = [];
             const acts = await this.$store.dispatch("loadActions");
             var _acts = [];
             acts.map((a)=>{
@@ -91,27 +100,39 @@ export default {
                 if (!(!!a.promoimage)) {   
                     return;
                 }
+                var _id = (!!a.mainorgid) ? a.mainorgid : a.tenantid;
                 
-                //don`t use non needs (my-cards & nears)
+                /* get a store by action */
                 var _all = all.filter((store)=>{
-                    var _id = (!!a.mainorgid) ? a.mainorgid : a.tenantid;
                     return ((_id === store.id)||(_id === store.tenantid));
                 });
                 if (_all.length < 1){
                     return;
                 }
-                
-                _acts.push(Object.assign({distance: _all[0].distance, location: _all[0].location}, a));
+                if (ids.indexOf(_id) < 0){
+                    ids.push(_id);
+                    _acts.push(Object.assign({
+                        distance: _all[0].distance, 
+                        location: _all[0].location,
+                        my: _all[0].my
+                    }, a));
+                    
+                }
             });
             
             this.actions = _acts.sort((a1, a2)=>{
                 if (!(!!a1.distance)){
                     return (!!a2.distance) ? -1 : 1;
                 }
-                return a1.distance < a2.distance 
-                       ? -1
-                       : (a1.distance > a2.distance) ? 1 : 0;
+                return (a1.my && !a2.my) 
+                        ? -1
+                        : (!a1.my && a2.my) 
+                            ? 1
+                            : a1.distance < a2.distance 
+                                ? -1
+                                : (a1.distance > a2.distance) ? 1 : 0;
             });
+            console.log('actions', this.actions);
             this.mode = MODES.default;
             this.$emit("load", this.actions.length);
         } catch(e) {
