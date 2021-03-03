@@ -172,7 +172,7 @@ export default {
             }
             if (this.$store.getters["profile/isAnonymous"]){
                 ski.authOrReg();
-                return;
+                return false;
             }
           
             this.sending = true;

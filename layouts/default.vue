@@ -126,6 +126,9 @@
         <sk-shopper :show="fDlgShopper"
                     @hide="processOrder">
         </sk-shopper>
+        <sk-auth-msg :show="fAuthOrgReg"
+                     @hide="fAuthOrgReg = false">
+        </sk-auth-msg>
     </v-main>
       
     <v-footer v-if="takeBasket" app class="sk-order-now" :color="ab.bg">
@@ -212,6 +215,8 @@ import SkBasket from '~/components/SkBasket';
 import SkShopper from '~/components/SkShopper';
 import SkPayment from '~/components/SkPayment';
 import SkConfirm from '~/components/SkConfirm';
+import SkAuthMsg from '~/components/SkAuthMsg';
+
 import SkStoreActionsNavi from '~/components/SkStoreActionsNavi';
 import geo from '~/utils/geo';
 
@@ -265,7 +270,8 @@ export default {
         SkBasket,
         SkShopper,
         SkPayment,
-        SkUserInfo
+        SkUserInfo,
+        SkAuthMsg
     },
     data(){
         return {
@@ -282,6 +288,7 @@ export default {
             fDlgShopper: false,
             fDlgPayment: false,
             fAvaNeed: false,
+            fAuthOrgReg: false,
             geo: geo
         };
     },
@@ -306,6 +313,7 @@ export default {
     created(){
         ski.confirm = this.confirm;
         ski.msg = this.msg;
+        ski.authOrReg = this.authOrReg;
         ski.utils = $utils;
     },
     computed: {
@@ -471,6 +479,9 @@ export default {
                     }
                 }
             });
+        }, 
+        authOrReg(){
+            this.fAuthOrgReg = (new Date()).getTime();
         }
     }
 }

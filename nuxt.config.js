@@ -1,8 +1,6 @@
 const webpack = require('webpack');
 const path = require('path');
 
-console.log('process mode: ' + process.env.NODE_ENV);
-
 export default {
   ssr: false,
   generate: {
@@ -92,23 +90,13 @@ export default {
       dark: false,
       themes: {
         dark: {
-/*            
-          primary: colors.blue.darken2,
-          accent: colors.grey.darken3,
-          secondary: colors.amber.darken3,
-          info: colors.teal.lighten1,
-          warning: colors.amber.base,
-          error: colors.deepOrange.accent4,
-          success: colors.green.accent3
-* 
-*/
         }
       }
     }
   },
 
 build: {
-    publicPath: "/nuxt/",
+    //publicPath: "/nuxt/",
     plugins: [
         new webpack.ProvidePlugin({
           '$utils': path.resolve(__dirname, 'utils/index.js'),
@@ -131,8 +119,8 @@ build: {
             ]}
         })
     ]
-  },
+  } /*,
 router: {
   mode: "hash"
-}
+}*/
 }
