@@ -78,7 +78,8 @@ function post(options) {
     var config = {
         dataType: 'json',
         method: 'POST',
-        contentType: 'application/json;charset=utf-8'
+        contentType: 'application/json;charset=utf-8',
+        xhrFields: {withCredentials: true}
     };
     switch (options.type) {
         case 'api-call':
@@ -87,6 +88,7 @@ function post(options) {
                 url += options.url;
             }
             config = Object.assign(config, options);
+            
             delete config.url;
             delete config.type;
             break;
