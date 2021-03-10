@@ -295,6 +295,9 @@ export const getters = {
   isAnonymous(state){
       return (!!state.user) ? state.user.isAnonymous : true;
   },
+  id(state){
+      return state.user.id;
+  },
   login(state){
     console.log('login is depricated, using get...');
     return $utils.isEmpty(state.user.login) ? '' : state.user.login;
