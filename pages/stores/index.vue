@@ -22,7 +22,16 @@ export default{
         const { store } = context;
         try {
             store.commit("settings/setDispMode", DISP_MODES.list);
-            return {stores: await store.dispatch("loadStores", {my: false})};
+            var stores = [...await store.dispatch("loadStores", {my: false})];
+            return {
+                stores: stores.sort((s1, s2)=>{
+                    return s1.distance < s2.distance 
+                                ? -1 
+                                : (s1.distance == s2.distance)
+                                    ? s1.title.localeCompare(s2.title)
+                                    : 1;
+                })
+            };
         } catch(e) {
             console.log('ERR SkStores', e);
         }

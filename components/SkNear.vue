@@ -95,7 +95,11 @@ export default {
                 }
             });
             this.stores = _stores.sort((s1, s2)=>{
-                return s1.distance < s2.distance ? -1 : 1;
+                    return s1.distance < s2.distance 
+                                ? -1 
+                                : (s1.distance == s2.distance)
+                                    ? s1.title.localeCompare(s2.title)
+                                    : 1;
             });
             this.mode = MODES.default;
             this.$emit("load", this.stores.length);
