@@ -121,7 +121,7 @@
                    />
         <sk-payment v-if="fDlgPayment" 
                     :show="fDlgPayment"
-                    @hide="fDlgPayment=false">
+                    @hide="hidePayment">
         </sk-payment>
         <sk-shopper :show="fDlgShopper"
                     @hide="processOrder">
@@ -446,6 +446,10 @@ export default {
         onOrder(){
             this.fDlgShopper = (new Date()).getTime();
         },
+        hidePayment(mode){
+            this.fDlgPayment = false;
+            this.$router.replace({path: (!!this.activeStore) ? `/stores/${this.activeStore.id}` : '/'});
+        },
         async processOrder(shopper){
             this.fDlgShopper = false;
             if (!(!!shopper)){
@@ -458,6 +462,7 @@ export default {
                     this.$nextTick(()=>{
                         this.fDlgPayment = (new Date()).getTime();
                     });
+                    ski.tryWs(order.id);  ///for callback waiting
                 } else {
                     this.msg({
                                 color:this.ab.bg, 

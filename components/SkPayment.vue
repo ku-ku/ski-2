@@ -12,12 +12,12 @@
             <v-alert type="success" outlined class="mt-5" v-if="(mode==MODES.success)">
                 Платеж совершен!
                 <v-spacer></v-spacer>
-                <v-btn @click="hide" color="success" class="mt-3">вернуться к меню</v-btn>
+                <v-btn @click="hide" color="success" class="mt-3">вернуться в магазин</v-btn>
             </v-alert>
             <v-alert type="warning" outlined class="mt-5" v-else-if="(mode==MODES.error)">
                 Оплата не проведена. С Вами свяжется наш представитель
                 <v-spacer></v-spacer>
-                <v-btn @click="hide" class="warning">вернуться к меню</v-btn>
+                <v-btn @click="hide" class="warning">вернуться в магазин</v-btn>
             </v-alert>
         </p>
         <div v-else>
@@ -43,11 +43,24 @@ export default {
     },
     created(){
         const self = this;
+        //with ws
         eventBus.$on('order', (msg)=>{
             if ('success'===msg){
                 self.$store.commit('basket/complete', self.order);
             } else {
                 self.$store.commit('basket/error', {message: msg});
+            }
+        });
+        //with ifr
+        window.addEventListener("message", (e)=>{
+            if (typeof e.data !== "undefined"){
+                if ("success"===e.data.message){
+                    if (!!e.data.value){
+                        self.$store.commit('basket/complete', self.order);
+                    } else {
+                        self.$store.commit('basket/error', {message: 'заказ не оплачен'});
+                    }
+                }
             }
         });
     },
@@ -83,7 +96,7 @@ export default {
     },
     methods: {
         hide(){
-            this.$emit('hide');
+            this.$emit('hide', this.mode);
         }
     }
 }

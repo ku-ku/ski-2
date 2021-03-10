@@ -54,6 +54,7 @@ export default {
       backUrl: (/^dev/.test(process.env.NODE_ENV)) ? '/wp'  : 'https://i.моикарты.рф',
       apiUrl:  (/^dev/.test(process.env.NODE_ENV)) ? '/api' : 'https://моикарты.рф/api/skidosapi',
       wsUrl: 'wss://моикарты.рф/notice',
+//      wsUrl: 'ws://192.168.61.73:8084/skidosapi/notice',
       pushSndId: 349717391015
   },
   proxy: {

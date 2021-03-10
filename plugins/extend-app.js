@@ -40,6 +40,66 @@ export default async function ({ app }) {
             this.$store.dispatch("settings/destroy");
         },
         methods: {
+            async _check_sock(){
+                const self = this;
+                return new Promise((resolve, reject)=>{
+                    if (!!sock){
+                        try {
+                            if (sock.readyState !== sock.OPEN){
+                                sock.close();
+                                throw 'sock closed';
+                            }
+                            sock.send('ping');  //TODO: reconnect
+                        } catch(e) {
+                            sock = null;
+                            console.log('WS ping error at:', new Date(), e);
+                        }
+                    }
+                    if (!!sock){
+                        resolve();
+                    } else {
+                        console.log('ws: opening at ', self.context.env.wsUrl);
+                        sock = new WebSocket(self.context.env.wsUrl);
+                        sock.onclose = e => {
+                            console.log('ws: closed', e);
+                        };
+                        sock.onmessage = (e)=>{
+                            console.log('MSG:', e.data);
+                            try {
+                                var msg = /^\{+/.test(e.data) ? JSON.parse(e.data) : null;
+                                if ((!!msg) && !$utils.isEmpty(msg.type)){
+                                    switch(msg.type) {
+                                        case 'chat':
+                                            eventBus.$emit('chat', msg.text);
+                                            break;
+                                        case 'order':
+                                            eventBus.$emit('order', msg.text);
+                                            break;
+                                    }
+                                }
+                            } catch(e) {
+                                console.log('MSG err:', e);
+                            }
+                        };  //sock.onmessage
+                        sock.onopen = ()=>{
+                            (async ()=>{
+                                var info = { uid: self.$store.getters["profile/id"] };
+                                if (!!self.$store.state.settings.notifi.fcmId){
+                                    info.regId = self.$store.state.settings.notifi.fcmId;
+                                }
+                                try {
+                                    sock.send(JSON.stringify(info));
+                                    resolve();
+                                    console.log('ws: opened ');
+                                }catch(e){
+                                    console.log('ERR: ws user-init:', e);
+                                    reject();
+                                }
+                            })();
+                        };  //sock.onopen
+                    }
+                });
+            },  //_check_sock
             /*
              * Callback when user authenticated
              * (re)init ping's
@@ -66,61 +126,19 @@ export default async function ({ app }) {
                 
                 //WS: opening when user avail
                 if (!!_hwsTimer){ clearInterval(_hwsTimer);}
-                const _check_sock = function(){
-                    if (!!sock){
-                        try {
-                            if (sock.readyState !== sock.OPEN){
-                                sock.close();
-                                throw 'sock closed';
-                            }
-                            sock.send('ping');  //TODO: reconnect
-                        } catch(e) {
-                            sock = null;
-                            console.log('WS ping error at:', new Date(), e);
-                        }
-                    }
-                    if (!sock){
-                        console.log('ws: opening at ', self.context.env.wsUrl);
-                        sock = new WebSocket(self.context.env.wsUrl);
-                        sock.onmessage = (e)=>{
-                            console.log('MSG:', e.data);
-                            try {
-                                var msg = /^\{+/.test(e.data) ? JSON.parse(e.data) : null;
-                                if ((!!msg) && !$utils.isEmpty(msg.type)){
-                                    switch(msg.type) {
-                                        case 'chat':
-                                            eventBus.$emit('chat', msg.text);
-                                            break;
-                                        case 'order':
-                                            eventBus.$emit('order', msg.text);
-                                            break;
-                                    }
-                                }
-                            } catch(e) {
-                                console.log('MSG err:', e);
-                            }
-                        };  //sock.onmessage
-                        sock.onopen = ()=>{
-                            (async ()=>{
-                                var info = { uid: user.id };
-                                if (!!self.$store.state.settings.notifi.fcmId){
-                                    info.regId = self.$store.state.settings.notifi.fcmId;
-                                }
-                                try {
-                                    sock.send(JSON.stringify(info));
-                                    console.log('ws: opened ');
-                                }catch(e){
-                                    console.log('ERR: ws user-init:', e);
-                                }
-                            })();
-                        };  //sock.onopen
-                    }
-                };  //_get_sock
-                _hwsTimer = setInterval(()=>{_check_sock();}, PING_TM);
-                _check_sock();
+                _hwsTimer = setInterval(()=>{this._check_sock();}, PING_TM);
+                this._check_sock();
             },   //onUser
             msg(){
                 //TODO:
+            },
+            async tryWs(id){
+                try {
+                    await this._check_sock();
+                    sock.send((!!id) ? JSON.stringify({uid: id}) : 'ping');
+                } catch(e) {
+                    console.log('ERR (sock)', e);
+                }
             }
         }
     });
