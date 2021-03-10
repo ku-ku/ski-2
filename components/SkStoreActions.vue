@@ -142,7 +142,7 @@ export default {
                                                 icon: true 
                                             },
                                             on: {click: ()=>{this.chips = !this.chips;}}
-                              }, [h("v-icon", {props: {}}, this.chips ? "mdi-checkbox-multiple-blank-outline" : "mdi-dots-vertical")]);
+                              }, [h("v-icon", {props: {}}, this.chips ? "mdi-cards-variant" : "mdi-format-list-text")]);
 
                     items.push( h('v-list-item', {
                             key: 'store-cats-' + this.store.id,
