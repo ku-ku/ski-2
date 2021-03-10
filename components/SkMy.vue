@@ -1,5 +1,6 @@
 <script>
-import { MODES } from "~/utils/index.js";    
+import { MODES } from "~/utils/index.js";
+import { eventBus } from '~/utils/eb';
 import { 
         VImg,
         VList,
@@ -71,20 +72,32 @@ export default {
             cards: null
         };
     },
+    created(){
+        eventBus.$on('new-store', ()=>{
+            this.load(true);
+        });
+    },
     async fetch(){
-        this.mode = MODES.loading;
-        try {
-            const cards = await this.$store.dispatch("loadStores", {my: true});
-            var _cards = [];
-            cards.map((card)=>{
-                var c = Object.assign({}, card);
-                _cards.push(c);
-            });
-            this.cards = _cards;
-            this.mode = MODES.default;
-            this.$emit("load", this.cards.length);
-        } catch(e) {
-            this.mode = MODES.error;
+        this.load(false);
+    },
+    methods: {
+        async load(reset){
+            this.mode = MODES.loading;
+            console.log('my: load', !!reset);
+            try {
+                const cards = await this.$store.dispatch("loadStores", {my: true, reset: !!reset});
+                var _cards = [];
+                cards.map((card)=>{
+                    var c = Object.assign({}, card);
+                    _cards.push(c);
+                });
+                this.cards = _cards;
+                this.mode = MODES.default;
+                this.$emit("load", this.cards.length);
+            } catch(e) {
+                console.log('ERR (my)', e);
+                this.mode = MODES.error;
+            }
         }
     },
     render(h){

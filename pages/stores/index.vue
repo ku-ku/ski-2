@@ -24,7 +24,7 @@ export default{
             store.commit("settings/setDispMode", DISP_MODES.list);
             return {stores: await store.dispatch("loadStores", {my: false})};
         } catch(e) {
-            console.log(e);
+            console.log('ERR SkStores', e);
         }
     },
     data(){

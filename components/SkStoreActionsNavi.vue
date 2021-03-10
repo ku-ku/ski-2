@@ -22,8 +22,13 @@ export default {
             return { cats: [] };
         },
         async fetch(){
-            await this.$store.dispatch("active/getActions");            
-            this.cats = this.$store.state.active.groups;
+            try {
+                await this.$store.dispatch("active/getActions");
+                this.cats = this.$store.state.active.groups;
+            } catch(e) {
+                this.cats = [];
+                console.log('ERR (sk-store-actions-navi)', e);
+            }
         },
         computed: {
             has(){

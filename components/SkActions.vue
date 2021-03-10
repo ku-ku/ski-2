@@ -136,6 +136,7 @@ export default {
             this.mode = MODES.default;
             this.$emit("load", this.actions.length);
         } catch(e) {
+            console.log('ERR (actions)', e);
             this.mode = MODES.error;
         }
     },
