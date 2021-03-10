@@ -318,11 +318,11 @@ export const getters = {
   is: state => q => {
     switch(q){
         case "authenticated":
-            return getters.isAuthenticated(state);
+            return (!!state.user) ? state.user.isAuthenticated : false;
         case "anonymous":
-            return getters.isAnonymous(state);
+            return (!!state.user) ? state.user.isAnonymous : true;
         case "user":
-            return (getters.isAuthenticated(state) && !getters.isAnonymous(state));
+            return (!!state.user) && !state.user.isAnonymous;
         case "trader":
             return ((!!state.user.adds)&&(!!state.user.adds.istrader));
         default:

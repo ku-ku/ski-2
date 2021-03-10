@@ -179,6 +179,8 @@ export default {
             try{
                 var card = await this.$store.dispatch("takeCard", {id: this.store.id});
                 this.sending = false;
+                await this.$fetch();
+                this.state = ST_MODES.qr;
             } catch(e){
                 console.log('ERR on call /share card:', e);
                 if ((!!e.data)&&/already\sexist/gi.test(e.data)){

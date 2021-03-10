@@ -175,42 +175,37 @@ export const actions = {
     async takeCard(store, payload){
         const id_to_take = $utils.uuidv4();
         const userId = store.rootGetters["profile/id"];
-        const opts = {
-            type: 'core-create',
-            query: 'sin2:/v:e4737054-e251-44ff-8fc7-9eba56dd1faf',
-            params: [
-                {id: 'id', type:'id', value: id_to_take},
-                {id: 'userID', type:'id', value: userId},
-                {id: 'tenantID', type:'id', value: payload.id},
-                {id: 'regDt', type: 'dateTime', value: new Date()},
-                {id: 'Blocked', type: 'boolean', value: false}
-            ]
+        const params = {
+                id: id_to_take,
+                userid: userId,
+                tenantid: payload.id
         };
+
         return new Promise((resolve, reject)=>{
-            if (store.rootGetters["profile/is"]("user")){
+            if (!store.rootGetters["profile/is"]("user")){
                 reject("no user");
-            }
-            (async ()=>{
-                try {
-                    var res = await this.$http.post(opts);
-                    if (!!res.error){
-                        throw res.error;
+            } else {
+                (async ()=>{
+                    try {
+                        var resp = await this.$http.post({
+                            type: 'api-call',
+                            url: '/skidosapi/account',
+                            dataType: 'text',
+                            data: JSON.stringify(params),
+                            processData: false
+                        });
+                        if (!!resp.success) {
+                            throw {message: 'no card registered'};
+                        } else {
+                            console.log(resp);
+                            eventBus.$emit('new-store', id_to_take);
+                            resolve({id: id_to_take});
+                        }        
+                    } catch(e) {
+                        reject(e);
                     }
-                    var card = await store.dispatch("loadCard", {by:"id", id:id_to_take});
-                    eventBus.$emit('new-store', id_to_take);
-                    this.$http.post({
-                        type: 'api-call',
-                        url: '/skidosapi/share', 
-                        contentType: 'application/json;charset=utf-8',
-                        dataType: 'text',
-                        data: JSON.stringify({q:'card', account: id_to_take}),
-                        processData: false
-                    });
-                    resolve(card);
-                }catch(e){
-                    reject(e);
-                }
-            })();
+                })();
+            }
         });
     },   //takeCard
     async loadFills(store, payload){
