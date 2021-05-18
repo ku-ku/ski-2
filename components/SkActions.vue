@@ -124,13 +124,24 @@ export default {
                 if (!(!!a1.distance)){
                     return (!!a2.distance) ? -1 : 1;
                 }
-                return (a1.my && !a2.my) 
+                return a1.distance < a2.distance 
+                                ? -1 
+                                : (a1.distance == a2.distance)
+                                    ? (a1?.orgname || a1.mainorgname).localeCompare(a2?.orgname || a2.mainorgname)
+                                    : 1;
+
+/*                
+                
+                        
+                        (a1.my && !a2.my) 
                         ? -1
                         : (!a1.my && a2.my) 
                             ? 1
                             : a1.distance < a2.distance 
                                 ? -1
                                 : (a1.distance > a2.distance) ? 1 : 0;
+* 
+*/
             });
             console.log('actions', this.actions);
             this.mode = MODES.default;
