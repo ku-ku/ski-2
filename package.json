@@ -5,7 +5,8 @@
   "scripts": {
     "build": "nuxt build",
     "dev": "nuxt",
-    "generate": "nuxt generate && rm src-cordova/www/* -r && cp www/* src-cordova/www/ -r && replace '/nuxt/' 'nuxt/' src-cordova/www -r && replace '/assets/' 'assets/' src-cordova/www -r",
+    "generate": "nuxt generate",
+    "generate_cordova": "nuxt generate && rm src-cordova/www/* -r && cp www/* src-cordova/www/ -r && replace '/nuxt/' 'nuxt/' src-cordova/www -r && replace '/assets/' 'assets/' src-cordova/www -r",
     "cordova-run-android": "cd src-cordova && cordova build android && cordova run android",
     "cordova-build-android": "cd src-cordova && cordova build android --release",
     "start": "nuxt start"
