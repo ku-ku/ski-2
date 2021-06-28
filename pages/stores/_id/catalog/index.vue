@@ -143,7 +143,8 @@ export default {
                     params: {
                         that: 1,
                         tenantid: this.tenant,
-                        prms: ''
+                        prms: '',
+                        userid: this.$store.state.profile.user.id
                     }
                 };
                 var resp = await this.$http.post(opts);
@@ -177,7 +178,8 @@ export default {
                 params: {
                     that: 2,
                     tenantid: this.tenant,
-                    prms: that
+                    prms: that,
+                    userid: this.$store.state.profile.user.id
                 }
             };
             try {
