@@ -17,7 +17,12 @@ export default {
       { name: 'viewport', content: 'width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, minimal-ui' },
       { name: 'apple-mobile-web-app-capable', content: 'yes'},
       { name: 'mobile-web-app-capable', content: 'yes'},
-      { hid: 'description', name: 'description', content: 'моикарты,акции,скидки,ecommerce,online-продажи' }
+      { hid: 'description', name: 'description', content: 'моикарты,акции,скидки,ecommerce,online-продажи' },
+      {
+       'http-equiv': 'Content-Security-Policy',
+       content:
+         "default-src * ;img-src * 'self' data: blob: ;font-src 'self' data: https: ;style-src * 'self' 'unsafe-inline' 'unsafe-eval' ; worker-src blob: ; child-src blob: gap://ready ; connect-src * 'self' https://*.tiles.mapbox.com https://api.mapbox.com https://events.mapbox.com ; script-src * 'self' 'unsafe-inline' 'unsafe-eval' ; frame-src * gap://ready 'self' 'nonce-lots-of-digits' ;"
+     }
     ],
     link: [
         { rel: "icon", type: "image/x-icon", href: "/favicon.ico" },
@@ -97,7 +102,7 @@ export default {
   },
 
 build: {
-    //publicPath: "/nuxt/",
+    publicPath: "/nuxt/",
     plugins: [
         new webpack.ProvidePlugin({
           '$utils': path.resolve(__dirname, 'utils/index.js'),
@@ -120,8 +125,8 @@ build: {
             ]}
         })
     ]
-  } /*,
+  } ,
 router: {
   mode: "hash"
-}*/
+}
 }
