@@ -188,11 +188,12 @@ export default {
                     );
                 }
 
-                var dates, inCart,
+                var dates, inCart, inAmount,
                     kindId = 'xxx', kind = null;
                 
                 this.actions.map((item)=>{
                     inCart = this.$store.getters["basket/has"](item.id);
+                    inAmount = this.$store.getters["basket/amount"](item.id);
                     if ($utils.isEmpty(item.enddt)){
                         dates = false;
                     } else {
@@ -249,6 +250,13 @@ export default {
                                                 ($utils.isEmpty(item.unitname) ? '' : ' (' + item.unitname + ')')
                                             )
                                         ]),
+                                        (!$utils.isEmpty(item.minamount)||!$utils.isEmpty(item.multiplicity))
+                                            ? h('div', {class: "orange--text text--darken-2"}, [
+                                                !$utils.isEmpty(item.minamount) ? h('span', 'Мин: ' + item.minamount + '; ') : null,
+                                                ' ',
+                                                !$utils.isEmpty(item.multiplicity) ? h('span', 'Кратн: ' + item.multiplicity) : null
+                                            ])
+                                            : null,
                                         $utils.isEmpty(item.promoproducer)
                                             ? null
                                             : h('div', {class: {"sk-produ": true}}, item.promoproducer),
