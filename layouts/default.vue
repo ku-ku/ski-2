@@ -444,6 +444,22 @@ export default {
             }
         },
         onOrder(){
+            const basket = this.$store.getters["basket/basket"](this.activeStore.id);
+            var check = true;
+            basket.map((prod) => {
+                if ( prod.minamount&&(prod.minamount>prod.num) ) {
+                    check = false;
+                }
+            });
+            console.log(check);
+            if ( !check ) {
+                this.msg({
+                    color:'warning', 
+                    text:'По некоторым позициям в корзине количество меньше минимальной партии.',
+                    timeout: 20000
+                });
+                return;
+            }
             this.fDlgShopper = (new Date()).getTime();
         },
         hidePayment(mode){
@@ -457,7 +473,7 @@ export default {
             }
             try{
                 await this.$store.dispatch("profile/saveShopper", shopper);
-                var order = await this.$store.dispatch("basket/save");
+                var order = await this.$store.dispatch("basket/save", shopper);
                 if (!!order.pay){
                     this.$nextTick(()=>{
                         this.fDlgPayment = (new Date()).getTime();
