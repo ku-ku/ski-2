@@ -189,7 +189,7 @@ export default {
                 }
                 var data = [];
                 resp.result.data.map((a)=>{
-                    data.push({id: a[4], name: a[6], price: a[11], img: a[5], unit: a[13]});
+                    data.push({id: a[4], name: a[6], price: a[11], img: a[5], unit: a[13], minamount: a[21], multiplicity: a[22]});
                 });
                 if (!this.totals){
                     this.totals = {n: 0};
@@ -347,7 +347,14 @@ export default {
                                             h('div', {class:{'sk-price': true}}, [
                                                 (Number(d.price)>0) ? d.price + 'р.' : '',
                                                 $utils.isEmpty(d.unit) ? null : h('span', {class:{'sk-unit': true}}, ' (' + d.unit + ')')
-                                            ])
+                                            ]),
+                                            (!$utils.isEmpty(d.minamount)||!$utils.isEmpty(d.multiplicity))
+                                                ? h('div', {class: "orange--text text--darken-2"}, [
+                                                    !$utils.isEmpty(d.minamount) ? h('span', 'Мин: ' + d.minamount + '; ') : null,
+                                                    ' ',
+                                                    !$utils.isEmpty(d.multiplicity) ? h('span', 'Кратн: ' + d.multiplicity) : null
+                                                ])
+                                                : null,
                                         ]),
                                         h('v-list-item-icon', [
                                             h('sk-svg', {props:{xref:"#ico-right"}, style:{color:"#ccc"}})
