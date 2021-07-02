@@ -57,7 +57,7 @@ export default {
             ]));
         }
         conte.push(h('v-btn', {props:{
-                                to: {name: 'orders'},
+                                to: {path: '/stores/' + this.store.id + '/orders'},
                                 outlined: true,
                                 color: bg
                             }, class: {'mt-3': true, 'sk-go-orders': true}}, [
