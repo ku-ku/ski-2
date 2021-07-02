@@ -69,9 +69,10 @@ export default {
         },
         pm(prod, add){
             var p = Object.assign({}, prod);
-            var n = prod.num + ((add) ? 1 : -1);
+            var diff = prod.multiplicity || 1;
+            var n = prod.num + ((add) ? diff : -diff);
             if (n < 1){
-                n = 1;
+                n = diff;
             }
             p.num = n;
             p.total = n * p.newprice;
@@ -114,6 +115,13 @@ export default {
                                         $utils.isEmpty(prod.promoproducer)
                                                 ? null
                                                 : h('div', {class: {'sk-produ': true}}, prod.promoproducer),
+                                        (!$utils.isEmpty(prod.minamount)||!$utils.isEmpty(prod.multiplicity))
+                                            ? h('div', [
+                                                !$utils.isEmpty(prod.minamount) ? h('span', {class: `${(prod.minamount > prod.num) ? 'red' : 'orange'}--text text--darken-2`}, 'Мин: ' + prod.minamount + '; ') : null,
+                                                ' ',
+                                                !$utils.isEmpty(prod.multiplicity) ? h('span', {class: `orange--text text--darken-2`}, 'Кратн: ' + prod.multiplicity) : null
+                                            ])
+                                            : null,
                                         h('div', {class: {'sk-from-basket': true}}, [
                                                 h('v-btn', {
                                                             props: {color: 'secondary', 'x-small': true, text: true},
