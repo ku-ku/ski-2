@@ -111,7 +111,7 @@ const actions = {
         commit('fix',  {prods:[]});
         commit('processing', MODES.none);
     },
-    save(store){
+    save(store, shopper){
         console.log('saving: ', store);
         const http = this.$http;
         const { commit, state } = store;
@@ -130,6 +130,9 @@ const actions = {
                 "pay":    (!!user.adds)&&(!!user.adds.pay),
                 "goods" : []
             };
+            if ( shopper.addr) {
+                b.addr = shopper.addr;
+            }
             var total = 0;
             basket.prods.map( (p)=>{
                 b.tenantid = p.store.id;
@@ -138,7 +141,7 @@ const actions = {
                     "amount":    p.num,
                     "opersum":   p.total,
                     "note":      p.note,
-                    "self":      p.self,
+                    "self":      shopper.self,
                     "delivarydate": $moment($moment.now()).format('YYYY-MM-DD HH:mm:ss')
                 });
                 total += p.total;
@@ -225,6 +228,21 @@ const getters = {
                 })
                 : [];
             return found.length;
+        };
+    },
+    amount(state){
+        return (id) => {
+            var found = ((!!state.basket)&&(!!state.basket.prods)) 
+                ? state.basket.prods.filter((p)=>{
+                    return (p.id===id) 
+                        || ((!!p.store)&&(p.store.id===id));
+                })
+                : [];
+            var amount = 0;
+            found.map((f) => {
+                amount += f.num;
+            });
+            return amount;
         };
     },
     basket(state){
