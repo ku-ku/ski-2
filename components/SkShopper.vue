@@ -30,6 +30,11 @@
                                 :readonly="!hasDeliv"
                                 :messages="deliv"
                             ></v-checkbox>
+                    <v-autocomplete class="pt-8" dense hide-details v-if="(addrs.length > 0)&&(shopper.self==false)" label="Адрес доставки" v-model="shopper.addr"
+                        :items="addrs"
+                        item-value="address"
+                        item-text="address">
+                    </v-autocomplete>
                     <v-checkbox v-if="hasPay"
                                 v-model="shopper.pay" 
                                 label="оплатить on-line"
@@ -70,8 +75,10 @@ export default {
                 self: false,
                 name: '',
                 phone: '',
-                pay: false
-            }
+                pay: false,
+                addr: null
+            },
+            addrs: []
         };
     },
     computed: {
@@ -162,10 +169,15 @@ export default {
                                             ? user.adds.self 
                                             : false
                                         : true;
+                this.addrs = (!!user.addrs) ? user.addrs : [];
                 setTimeout(()=>{
                     $(".mn-shopper").find('input[name="u"]').focus();
                 }, 200);
             }
+        },
+        'shopper.self'(val) {
+            if ( val )
+                this.shopper.addr = null;
         }
     }
 }    
