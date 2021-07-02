@@ -109,7 +109,11 @@ export default {
                     console.log('Image fail:', err);
                 });
             }
-            
+            if ( this.prod.minamount ) {
+                this.n = this.prod.minamount;
+            } else if ( this.prod.multiplicity ) {
+                this.n = this.prod.multiplicity;
+            }
             this.image.height = TB_EX_HEIGHT;
             this.image.fab = false;
             this._set_fab(false);
@@ -223,9 +227,10 @@ export default {
             });
         },   //doRait
         pm(add){
-            var n = this.n + ((add) ? 1 : -1);
-            if (n < 1){
-                n = 1;
+            var diff = this.prod.multiplicity || 1;
+            var n = this.n + ((add) ? diff : -diff);
+            if (n < diff){
+                n = diff;
             }
             this.n = n;
             if (this.$store.getters["basket/has"](this.prod.id)){
@@ -445,12 +450,15 @@ export default {
                                     }, on: {
                                         input: (e)=>{
                                             var n = Number(e);
-                                            this.n = (!!n) ? n : 1;
+                                            this.n = (!!n) ? n : ((prod.minamount) ? prod.minamount : ((prod.multiplicity) ? prod.multiplicity : 1));
                                         }
                                     }}),
                                     h('v-btn',  {props: {text: true}, on: {click: ()=>{this.pm(true);}}}, '+')
                                 ])
                             ]),
+                            (!$utils.isEmpty(prod.minamount))
+                                ? h('span', {class: "orange--text text--darken-2"}, ['Минимальная партия: ' + prod.minamount + ($utils.isEmpty(prod.unitname) ? null : ' / ' + prod.unitname)])
+                                : null,
                             h('v-textarea', {props: {
                                 "value": this.note,
                                 "full-width": true,
