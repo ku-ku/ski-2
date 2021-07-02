@@ -10,6 +10,7 @@ const USER_DEFS = {
     isAuthenticated: false,
     isAnonymous: true,
     adds: null,
+    addrs: null,
     roles: {}
 };
 
@@ -59,7 +60,12 @@ export const mutations = {
         state.user.adds = adds;
         state.lastAccess = new Date();
     },
-    
+    /**
+     * set additional form db
+     */
+     setAddrs: function(state, addrs){
+        state.user.addrs = addrs;
+    },   
     /**
      * set additional info form payment`s | profile saving
      */
@@ -113,6 +119,7 @@ export const actions = {
                     res.result.password = user.password;  //for local saving
                     store.commit('setSubject', res.result);
                     await store.dispatch('readAdds', res.result.id);
+                    await store.dispatch('readAddrs', res.result.id);
                     resolve(res);
                 } catch(e){
                     console.log('ERR on login:', e);
@@ -150,7 +157,31 @@ export const actions = {
         
         return new Promise(p);
   },    //readAdds
-  
+    readAddrs(store, payload){
+        const uid = payload;
+        const opts = {
+            type: 'core-read',
+            query: `sin2:/v:f290ffca-3e81-4a26-97fc-415d3eec3672?filter=eq(field(".userID"),param("${ uid }", "id"))`
+        },
+        http = this.$http,
+        p = (resolve, reject)=>{
+            (async ()=>{
+                try {
+                    var res = await http.post(opts);
+                    if ( (!!res.result) && (res.result.data.length>0) ){
+                        addrs = $utils.sin2objA(res.result.columnIndexes, res.result.data);
+                        store.commit('setAddrs', addrs);
+                    }
+                }catch(e){
+                    console.log('ERR on user', e);
+                    reject(e);
+                }
+            })();
+            resolve(addrs);
+        };        
+        var addrs = [];
+        return new Promise(p);
+    },    //readAddrs
   check: function(store, payload) {
     const { state } = store,
           http = this.$http;
@@ -179,6 +210,7 @@ export const actions = {
                 store.commit('setSubject', res.result);
                 if (anon!==user.login){
                     store.dispatch('readAdds', res.result.id);
+                    store.dispatch('readAddrs', res.result.id);
                 }
                 resolve(res);
             } else {
