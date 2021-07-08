@@ -89,8 +89,18 @@
                                 </div>     
                             </template>
                         </v-switch>
-                        <v-alert type="warning"  class="my-5" v-show="!/^$/.test(error)">
+                        <v-alert type="warning" class="my-5" v-show="has('error')">
                             <div v-html="error"></div>
+                            <div class="text-right" v-show="has('error-reset')">
+                                <v-btn color="orange accent-4" 
+                                       class="mt-3"
+                                       small
+                                       rounded 
+                                       to="/profile/forgot">
+                                    сбросить&nbsp;
+                                    <v-icon small>mdi-account-reactivate-outline</v-icon>
+                                </v-btn>
+                            </div>    
                         </v-alert>
                     </v-card-text>
                     <v-card-actions>
@@ -109,7 +119,6 @@
                     <v-card-title>{{modName}}</v-card-title>
                     <v-card-text>
                         <v-text-field
-                            label="e-mail"
                             name="eml"
                             type="text"
                             v-model="user.eml"
@@ -118,6 +127,9 @@
                             :readonly="has('forgotted')"
                             :rules="emailRules">
                             <v-icon small slot="prepend">mdi-at</v-icon>
+                            <template v-slot:label>
+                                E-mail&nbsp;<b class="red--text">*</b>
+                            </template>
                         </v-text-field>
                         <div v-if="has('reset')" class="mt-3">
                             <v-text-field
@@ -265,6 +277,10 @@ export default {
                          ||(this.mode === modes.AM_RESET);
                 case 'reset':
                     return (this.mode === modes.AM_RESET);
+                case 'error':
+                    return !$utils.isEmpty(this.error);
+                case 'error-reset':
+                    return /(сбросить)+.*(пароль)/i.test(this.error);
                 case 'user':
                     return !$utils.isEmpty(this.user.id); //see resetData when mode switch
                 default:
@@ -354,8 +370,12 @@ export default {
             } catch(e) {
                 console.log('ERR on register', e);
                 this.sending = false;
-                this.error = 'Возникла ошибка при регистрации&nbsp;- попробуйте повторить попытку позднее.<br />'
-                            +'<small>Дополнительная информация: ' + e.message + '</small>';
+                if (/^(поль).{1,}(существ)+/i.test(e.message)){
+                    this.error = 'Пользователь уже зарегистрирован, возможно стоит попытаться сбросить пароль';
+                } else {
+                    this.error = 'Возникла ошибка при регистрации&nbsp;- попробуйте повторить попытку позднее.<br />'
+                                +'<small>Дополнительная информация: ' + e.message + '</small>';
+                }
             }
         },    //on_register
         async _get_code(){
@@ -428,7 +448,7 @@ export default {
             e.preventDefault();
             if ( $utils.isEmpty(this.user.eml) ) {
                 this.valid = false;
-                this.error = 'для регистрации необходимо заполнить все данные';
+                this.error = 'Введите Ваш e-mail';
                 $('input[name="eml"]').trigger('focus');
                 return false;
             }
