@@ -1,7 +1,9 @@
 <template>
     <v-row class="sk-profile">
         <v-col cols="11" sm="8" md="4">
-            <v-form v-on:submit="on_auth($event)" action="#" v-if="is('auth')" v-model="valid">
+            <v-form v-on:submit="on_auth($event)" 
+                    action="#" v-if="has('auth')" 
+                    v-model="valid">
                 <v-card class="elevation-2">
                     <v-card-title>{{modName}}</v-card-title>
                     <v-card-text>
@@ -10,18 +12,16 @@
                             name="eml"
                             type="text"
                             v-model="user.eml"
-                            required
-                        >
-                            <sk-svg slot="prepend" xref="#ico-morda" />
+                            required>
+                            <v-icon small slot="prepend">mdi-emoticon-happy-outline</v-icon>
                         </v-text-field>
                         <v-text-field
                             label="Пароль"
                             name="p"
                             type="password"
                             v-model="user.pwd"
-                            required
-                        >
-                            <sk-svg slot="prepend" xref="#ico-asterisk" />
+                            required>
+                            <v-icon small slot="prepend">mdi-asterisk</v-icon>
                         </v-text-field>
                         <v-alert color="warning" dark class="my-5" v-show="!/^$/.test(error)">
                             {{ error }}
@@ -35,52 +35,42 @@
                         <v-btn text small 
                                class="ref-register" 
                                to="/profile/register">
-                            {{has("user") ? "редактировать профиль" : "зарегистрироваться"}}
+                            зарегистрироваться
                         </v-btn>
                         <v-btn text small to="/profile/forgot">забыли пароль?</v-btn>
                     </v-card-actions>
                 </v-card>
             </v-form>
-            <v-form v-else-if="is('register')" v-model="valid" v-on:submit="on_register($event)" action="#">
+            <v-form v-else-if="has('register')" 
+                    v-model="valid" 
+                    v-on:submit="on_register($event)" 
+                    action="#">
                 <v-card class="elevation-4">
-                    <v-card-title>{{modName}}</v-card-title>
+                    <v-card-title>{{ modName }}</v-card-title>
                     <v-card-text>
                         <v-text-field
-                            label="Имя"
                             name="u"
                             type="text"
                             v-model="user.title"
-                            required
-                        >
-                            <sk-svg slot="prepend" xref="#ico-morda" />
+                            required>
+                            <v-icon small 
+                                    slot="prepend">
+                                mdi-emoticon-happy-outline
+                            </v-icon>
+                            <template v-slot:label>
+                                Имя&nbsp;<b class="red--text">*</b>
+                            </template>
                         </v-text-field>
                         <v-text-field
-                            label="Пароль"
-                            name="p1"
-                            type="password"
-                            v-model="user.pwd"
-                            required
-                        >
-                            <sk-svg slot="prepend" xref="#ico-asterisk" />
-                        </v-text-field>
-                        <v-text-field
-                            label="Повторите пароль"
-                            name="p2"
-                            type="password"
-                            v-model="user.pwd2"
-                            required
-                        >
-                            <sk-svg slot="prepend" xref="#ico-asterisk" />
-                        </v-text-field>
-                        <v-text-field
-                            label="e-mail"
                             name="eml"
                             type="text"
                             v-model="user.eml"
                             required
-                            :rules="emailRules"
-                        >
-                            <sk-svg slot="prepend" xref="#ico-at" />
+                            :rules="emailRules">
+                            <v-icon small slot="prepend">mdi-at</v-icon>
+                            <template v-slot:label>
+                                E-mail&nbsp;<b class="red--text">*</b>
+                            </template>
                         </v-text-field>
                         <v-text-field
                             label="Телефон"
@@ -88,14 +78,17 @@
                             type="tel"
                             v-model="user.tel"
                             required
-                            :rules="telRules"
-                        >
-                            <sk-svg slot="prepend" xref="#ico-mobile" />
+                            :rules="telRules">
+                            <v-icon small slot="prepend">mdi-cellphone-iphone</v-icon>
                         </v-text-field>
                         <v-switch v-model="user.agree">
-                            <template v-slot:label>Отправляя данную форму, я согласен</template>
+                            <template v-slot:label>
+                                <div style="font-size:0.75rem;line-height:1.125;">
+                                    Отправляя данную форму, я согласен&nbsp;<b class="red--text">*</b><br />
+                                    <a href='//i.xn--80apggkpo6e.xn--p1ai/terms-of-use/' target="_blank">с правилами использования данного приложения</a>
+                                </div>     
+                            </template>
                         </v-switch>
-                        <a href='//i.xn--80apggkpo6e.xn--p1ai/terms-of-use/' target="_blank">с правилами использования данного приложения</a>
                         <v-alert type="warning"  class="my-5" v-show="!/^$/.test(error)">
                             <div v-html="error"></div>
                         </v-alert>
@@ -105,13 +98,13 @@
                                rounded dark 
                                color="red darken-4"
                                :loading="sending">
-                            {{has("user") ? "изменить данные" : "зарегистрироваться"}}
+                            зарегистрироваться
                         </v-btn>
                         <v-btn v-if="!has('user')" text small class="ref-auth" to="/profile/auth">авторизоваться</v-btn>
                     </v-card-actions>
                 </v-card>
             </v-form>
-            <v-form v-else-if="is('forgot')" v-on:submit="on_forgot($event)" action="#">
+            <v-form v-else-if="has('forgot')" v-on:submit="on_forgot($event)" action="#">
                 <v-card class="elevation-4">
                     <v-card-title>{{modName}}</v-card-title>
                     <v-card-text>
@@ -122,12 +115,11 @@
                             v-model="user.eml"
                             required
                             messages="Введите e-mail, указанный Вами при регистрации"
-                            :readonly="is('forgotted')"
-                            :rules="emailRules"
-                        >
-                            <sk-svg slot="prepend" xref="#ico-at" />
+                            :readonly="has('forgotted')"
+                            :rules="emailRules">
+                            <v-icon small slot="prepend">mdi-at</v-icon>
                         </v-text-field>
-                        <div v-if="is('reset')" class="mt-3">
+                        <div v-if="has('reset')" class="mt-3">
                             <v-text-field
                                 label="код"
                                 name="code"
@@ -135,27 +127,24 @@
                                 v-model="user.code"
                                 required
                                 messages="Введите код, отправленный Вам на e-mail"
-                                :rules="codeRules"
-                                >
-                                <sk-svg slot="prepend" xref="#ico-envel-open" />
+                                :rules="codeRules">
+                                <v-icon small slot="prepend">mdi-email-receive-outline</v-icon>
                             </v-text-field>
                             <v-text-field
                                 label="Пароль"
                                 name="p1"
                                 type="password"
                                 v-model="user.pwd"
-                                required
-                            >
-                                <sk-svg slot="prepend" xref="#ico-asterisk" />
+                                required>
+                                <v-icon small slot="prepend">mdi-asterisk</v-icon>
                             </v-text-field>
                             <v-text-field
                                 label="Повторите пароль"
                                 name="p2"
                                 type="password"
                                 v-model="user.pwd2"
-                                required
-                            >
-                                <sk-svg slot="prepend" xref="#ico-asterisk" />
+                                required>
+                                <v-icon small slot="prepend">mdi-asterisk</v-icon>
                             </v-text-field>
                         </div>
                         <v-alert :type="alert"  class="my-5" v-show="!/^$/.test(error)">
@@ -177,7 +166,6 @@
 </template>
 
 <script>
-import SkSvg from "@/components/SkSvg";
     
 const modes = {
     AM_NONE:     0,
@@ -207,7 +195,6 @@ const USER_DEFS = {
 
 export default {
   name: 'ViewSignIn',
-  components: { SkSvg },
   data() {
     return {
             mode: modes.AM_NONE,
@@ -220,7 +207,7 @@ export default {
                 v => ($utils.isEmpty(v) || /.+@.+/.test(v)) || 'укажите корректный e-mail адрес'
             ],
             codeRules: [
-                v => /^(\d{5,})+$/.test(v) || 'укажите код, отправленный Вам на e-mail'
+                v => /^(\d{4,})+$/.test(v) || 'укажите код, отправленный Вам на e-mail'
             ],
             error: '',
             alert: 'warning',    //for messages, TODO:
@@ -269,12 +256,6 @@ export default {
     methods: {
         has: function(q){
             switch(q){
-                case 'user':
-                    return !$utils.isEmpty(this.user.id); //see resetData when mode switch
-            }
-        },
-        is: function(mode){
-            switch(mode){
                 case 'auth':
                     return (this.mode === modes.AM_AUTH);
                 case 'register':
@@ -284,6 +265,8 @@ export default {
                          ||(this.mode === modes.AM_RESET);
                 case 'reset':
                     return (this.mode === modes.AM_RESET);
+                case 'user':
+                    return !$utils.isEmpty(this.user.id); //see resetData when mode switch
                 default:
                     return false;
             }
@@ -335,20 +318,16 @@ export default {
         async on_register(e){
             e.preventDefault();
             this.error = '';
-            if ( $utils.isEmpty(this.user.title) || 
-                 $utils.isEmpty(this.user.pwd)   ||
-                 $utils.isEmpty(this.user.tel)   ||
-                 $utils.isEmpty(this.user.eml)
-                ) {
+            if ( $utils.isEmpty(this.user.title) ){
                 this.valid = false;
-                this.error = 'для регистрации необходимо заполнить все данные';
+                this.error = 'для регистрации необходимо заполнить Ваше имя';
                 $('input[name="u"]').trigger('focus');
                 return false;
             }
-            if (this.user.pwd!==this.user.pwd2){
+            if ( $utils.isEmpty(this.user.eml) ) {
                 this.valid = false;
-                this.error = 'пароли не совпадают';
-                $('input[name="p2"]').trigger('focus');
+                this.error = 'для регистрации необходимо заполнить Ваше e-mail';
+                $('input[name="eml"]').trigger('focus');
                 return false;
             }
             if (!this.user.agree){
@@ -361,10 +340,12 @@ export default {
             const client = {
                         "name": this.user.eml,
                         "title": this.user.title,
-                        "password": this.user.pwd,
-                        "email": this.user.eml,
-                        "phone":this.user.tel
+                        "email": this.user.eml
             };
+            
+            if ( !$utils.isEmpty(this.user.tel) ){
+                client.phone = this.user.tel;
+            }
 
             try {
                 await this.$store.dispatch("profile/register", client);
@@ -373,7 +354,7 @@ export default {
             } catch(e) {
                 console.log('ERR on register', e);
                 this.sending = false;
-                this.error = 'Возникла ошибка при регистрации - попробуйте повторить попытку позднее.<br />'
+                this.error = 'Возникла ошибка при регистрации&nbsp;- попробуйте повторить попытку позднее.<br />'
                             +'<small>Дополнительная информация: ' + e.message + '</small>';
             }
         },    //on_register
@@ -493,6 +474,9 @@ export default {
                     color: #bdbdbd;
                 }
             }   /* .v-card */
+        }
+        & .v-alert{
+            line-height: 1.125;
         }
     }
 </style>

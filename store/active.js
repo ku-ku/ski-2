@@ -355,6 +355,12 @@ const getters = {
     hasActiveAction(state){
         return (!!state.action) && !$utils.isEmpty(state.action.id);
     },
+    get: state => q =>{
+        switch(q){
+            case "id": 
+                return state.store?.id;
+        }
+    },
     brand: state => q =>{
         switch(q){
             case "color":

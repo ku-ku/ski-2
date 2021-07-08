@@ -85,7 +85,7 @@
             </v-btn>
       </v-btn-toggle>  
       <v-btn v-if="is.anon" icon to="/profile/auth">
-          <sk-svg xref="#ico-signin" />
+          <v-icon>mdi-login</v-icon>
       </v-btn>
       <template v-else>
           <div v-if="is.store">

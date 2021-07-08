@@ -16,6 +16,38 @@ export const mutations = {
 };
 
 export const actions = {
+    async see(store, payload){
+        const hasDev = (typeof device !== "undefined"),
+              $http = this.$http;
+        store.dispatch("geo/current", null, { root: true }).then((ll)=>{
+            const opts = {
+                userId:   store.rootGetters["profile/get"]("id"),
+                deviceModel: (hasDev) ? device.model : '',
+                devicePlatform: (hasDev) ? device.platform : '',
+                deviceUuid: (hasDev) ? device.uuid : '',
+                deviceVersion: (hasDev) ? device.version : '',
+                lat: ll.lat.toString(),
+                lon: ll.lon.toString()
+            };
+            
+            if (!!payload){
+                if (!!payload.store){
+                    opts.tenantId = payload.store.id;
+                }
+                if (!!payload.product){
+                    opts.productId = payload.product.id;
+                }
+            }
+            
+            $http.post({
+                type: 'api-call',
+                url: 'skidosapi/see',
+                dataType: 'text',
+                processData: false,
+                data: JSON.stringify({q:btoa(JSON.stringify(opts))})
+            });
+        });
+    },   /* see */
     /**
      * loading my-cards (payload.my = true) or all-stores 
      * reload data by payload.reset
