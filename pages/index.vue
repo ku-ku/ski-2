@@ -5,7 +5,8 @@
               <v-expansion-panels :value="pane" accordion focusable>
                   <v-expansion-panel key="my-cards-pane">
                       <v-expansion-panel-header disable-icon-rotate>
-                          <v-badge :content="(counts.my > 0) ? counts.my : ''" 
+                          <v-badge :content="(counts.my > 0) ? counts.my : null" 
+                                   :class="{'no-info': (counts.my < 1)}"
                                    color='orange'
                                    class="justify-start"
                                    inline>мои подписки</v-badge>
@@ -91,6 +92,15 @@ export default {
     }
 }
 </script>
+<style lang="scss">
+    .v-badge{
+        &.no-info{
+            & .v-badge__badge{
+                display: none;
+            }
+        }
+    }
+</style>
 <style lang="scss" scoped>
     @import "~/assets/index.scss";
     
@@ -108,4 +118,5 @@ export default {
             color: #fff;
         }
     }
+    
 </style>

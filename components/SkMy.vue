@@ -117,9 +117,27 @@ export default {
                 break;
             case MODES.default:
                 childs.push(h('v-list', [
-                    this.cards.map((card)=>{
-                        return h(MyItem, {props: {card: card}});
-                    })
+                    this.cards.length > 0
+                        ? this.cards.map((card)=>{
+                                return h(MyItem, {props: {card: card}});
+                          })
+                        : h('v-list-item', {props: {to:{name: 'stores'}}}, [
+                            h('v-list-item-icon', [
+                                h('v-icon', {props: {color: 'accent'}}, 'mdi-storefront')
+                            ]),
+                            h('v-list-item-content', {
+                                style: {"line-height": 1.125, "font-size": "0.9rem"}
+                            }, [
+                                'Вы можете добавить любой из представленных в нашем приложении магазин для быстрого доступа к его товарам, совершения покупок, участия в проводимых акциях и многого другого',
+                                h('div', {class: "text-right mt-3"}, [
+                                    h('v-btn', {props: {color: "accent", outlined: true, to: {name: 'stores'}}}, 
+                                        [
+                                            'Все магазины',
+                                            h('v-icon', 'mdi-chevron-right')
+                                        ])
+                                ])
+                            ])
+                        ])
                 ]));
                 break;
         }

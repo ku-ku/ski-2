@@ -96,6 +96,9 @@ export default {
       dark: false,
       themes: {
         dark: {
+        },
+        light:{
+            accent: "#ad0900"
         }
       }
     }

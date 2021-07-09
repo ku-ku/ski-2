@@ -20,6 +20,7 @@
                             name="p"
                             type="password"
                             v-model="user.pwd"
+                            :messages="pwMessage"
                             required>
                             <v-icon small slot="prepend">mdi-asterisk</v-icon>
                         </v-text-field>
@@ -89,9 +90,11 @@
                                 </div>     
                             </template>
                         </v-switch>
-                        <v-alert type="warning" class="my-5" v-show="has('error')">
+                        <v-alert :type="alert"
+                                 class="my-5" 
+                                 v-show="has('error')">
                             <div v-html="error"></div>
-                            <div class="text-right" v-show="has('error-reset')">
+                            <div class="text-right" v-if="has('error-reset')">
                                 <v-btn color="orange accent-4" 
                                        class="mt-3"
                                        small
@@ -100,7 +103,16 @@
                                     сбросить&nbsp;
                                     <v-icon small>mdi-account-reactivate-outline</v-icon>
                                 </v-btn>
-                            </div>    
+                            </div>
+                            <div class="text-right" v-if="has('after-register')">
+                                <v-btn color="primary" 
+                                       class="mt-3"
+                                       rounded 
+                                       to="{path:'/profile/auth',query:{from: 'register'}}">
+                                    авторизоваться&nbsp;
+                                    <v-icon small>mdi-login</v-icon>
+                                </v-btn>
+                            </div>
                         </v-alert>
                     </v-card-text>
                     <v-card-actions>
@@ -110,7 +122,13 @@
                                :loading="sending">
                             зарегистрироваться
                         </v-btn>
-                        <v-btn v-if="!has('user')" text small class="ref-auth" to="/profile/auth">авторизоваться</v-btn>
+                        <v-btn v-if="!has('user')" 
+                               text 
+                               small 
+                               class="ref-auth" 
+                               to="/profile/auth">
+                            авторизоваться
+                        </v-btn>
                     </v-card-actions>
                 </v-card>
             </v-form>
@@ -223,7 +241,8 @@ export default {
             ],
             error: '',
             alert: 'warning',    //for messages, TODO:
-            sending: false
+            sending: false,
+            pwMessage: ''
         };
     },
     head(){
@@ -236,9 +255,11 @@ export default {
         if ($utils.isEmpty(pm)){
             pm = 'auth';
         }
+        var hasReset = true;
         switch(pm){
             case 'auth':
                 this.mode = modes.AM_AUTH;
+                hasReset = false;
                 break;
             case 'register':
                 this.mode = modes.AM_REGISTER;
@@ -252,7 +273,9 @@ export default {
             default:
               this.mode = modes.AM_AUTH;
         }
-        this.resetData();
+        if (hasReset){
+            this.resetData();
+        }
         var n = names[this.mode];
         if (!!n){
             this.$nextTick(() => {
@@ -270,6 +293,8 @@ export default {
             switch(q){
                 case 'auth':
                     return (this.mode === modes.AM_AUTH);
+                case 'after-register':
+                    return /(mail)+.*(парол)+/i.test(this.error);
                 case 'register':
                     return (this.mode === modes.AM_REGISTER);
                 case 'forgot':
@@ -280,7 +305,7 @@ export default {
                 case 'error':
                     return !$utils.isEmpty(this.error);
                 case 'error-reset':
-                    return /(сбросить)+.*(пароль)/i.test(this.error);
+                    return /(сбросить)+.*(пароль)+/i.test(this.error);
                 case 'user':
                     return !$utils.isEmpty(this.user.id); //see resetData when mode switch
                 default:
@@ -292,7 +317,8 @@ export default {
             this.error = '';
             this.alert = 'warning';
             var u = Object.assign({}, USER_DEFS);
-            if (    this.$store.getters["profile/isAuthenticated"] 
+            if (    
+                    this.$store.getters["profile/isAuthenticated"] 
                 && !this.$store.getters["profile/isAnonymous"]
                ){
                 const user = this.$store.state.profile.user;
@@ -317,7 +343,7 @@ export default {
             }
             this.error = '';
             this.sending = true;
-            (async () => {
+            (async ()=>{
                 try {
                     const u = { login: eml, password: pwd };
                     const res = await this.$store.dispatch('profile/login', {user: u});
@@ -365,8 +391,9 @@ export default {
 
             try {
                 await this.$store.dispatch("profile/register", client);
-                this.$router.replace({name:'index'});
                 this.sending = false;
+                this.alert = "info";
+                this.error = "На указанный Вами e-mail отправлено сообщение с паролем для входа - используйте его для авторизации";
             } catch(e) {
                 console.log('ERR on register', e);
                 this.sending = false;

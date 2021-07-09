@@ -237,7 +237,7 @@ export const actions = {
                 try {
                     var res = await http.post(opts);
                     if (!$utils.isEmpty(res.id)&&("null"!==res.id)){
-                        res = await dispatch('login', {user: {login: payload.name, password: payload.password }});
+                        //Don`t: res = await dispatch('login', {user: {login: payload.name, password: payload.password }});
                         resolve(res);
                     } else {
                         if ( ("1"==res.res) || ("2"==res.res)) {
