@@ -189,7 +189,15 @@ export default {
                 }
                 var data = [];
                 resp.result.data.map((a)=>{
-                    data.push({id: a[4], name: a[6], price: a[11], img: a[5], unit: a[13], minamount: a[21], multiplicity: a[22]});
+                    data.push({
+                        id: a[4], 
+                        name: a[6], 
+                        price: a[11], 
+                        img: a[5], 
+                        unit: a[13], 
+                        minamount: a[21], 
+                        multiplicity: a[22]
+                    });
                 });
                 if (!this.totals){
                     this.totals = {n: 0};
@@ -316,7 +324,7 @@ export default {
         if (this.mode === FIND_MODE.loading){
             childs.push(
                 h('div',{style:{"margin-top":"64px"}},[
-                    [1,2,3,4,5].map(()=>{
+                    [1,2,3].map(()=>{
                         return h('v-skeleton-loader', {props:{type:'list-item-avatar-three-line'}});
                     })
                 ])

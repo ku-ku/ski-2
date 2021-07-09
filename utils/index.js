@@ -34,6 +34,21 @@ const ST_MODES = {
     "chat":  6
 };
 
+const MONTHS = {
+                1: 'янв.',
+                2: 'фев.',
+                3: 'мар.',
+                4: 'апр.',
+                5: 'мая',
+                6: 'июн.',
+                7: 'июл.',
+                8: 'авг.',
+                9: 'сен.',
+                10: 'окт.',
+                11:'ноя.',
+                12:'дек.'
+};  //MONTHS
+
 
 /**
  * @param {Sting} val
@@ -192,6 +207,7 @@ export {
     MODES,
     DISP_MODES,
     ST_MODES,
+    MONTHS,
     isEmpty,
     tod,
     formatDate,

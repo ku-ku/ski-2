@@ -14,8 +14,7 @@ const MONTHS = {
                 12:'дек.'
 };  //MONTHS
 
-import { MODES } from "~/utils/index.js";
-import { DISP_MODES } from "~/utils/index.js";
+import { MODES, DISP_MODES, isEmpty } from "~/utils/index.js";
 
 import { 
         VCard,
@@ -34,7 +33,14 @@ import {
         VSkeletonLoader
        } from 'vuetify/lib';
 import SkSvg from "~/components/SkSvg";
-    
+import SkProdItem from "~/components/SkProdItem";
+const _stop = function(e){
+        if (!!e){
+            e.preventDefault();
+            e.stopPropagation();
+        }
+};
+
 export default {
     name: 'SkStoreActions',
     props: {
@@ -58,7 +64,8 @@ export default {
         VChip,
         VChipGroup,
         VSkeletonLoader,
-        SkSvg
+        SkSvg,
+        SkProdItem
     },
     data(){
         return {
@@ -99,21 +106,6 @@ export default {
         },   //gocat
         catbyid(id){
             return this.cats.filter((c)=>{return c.id === id;})[0];
-        },
-        month(m){
-            return (!!m) ? MONTHS[Number(m)] : '';
-        },
-        onorder(item){
-            console.log('onorder', item);
-            this.$router.push({path: "/stores/" + this.store.id + "/catalog/" + item.nameid});
-        },
-        frombasket(e, id){
-            if (e){
-                e.preventDefault();
-                e.stopPropagation();
-            }
-            this.$store.dispatch('basket/rm', {id: id});
-            return false;
         }
     },
     render(h){
@@ -188,20 +180,9 @@ export default {
                     );
                 }
 
-                var dates, inCart, inAmount,
-                    kindId = 'xxx', kind = null;
+                var kindId = 'xxx', kind = null;
                 
                 this.actions.map((item)=>{
-                    inCart = this.$store.getters["basket/has"](item.id);
-                    inAmount = this.$store.getters["basket/amount"](item.id);
-                    if ($utils.isEmpty(item.enddt)){
-                        dates = false;
-                    } else {
-                        var d = new Date(item.enddt);
-                        //TODO: by moment
-                        dates = 'до ' + d.getDate() + ' ' + this.month(d.getMonth());
-                    }
-                    
                     if (!$utils.isEmpty(item.kindid)){
                         if (kindId!==item.kindid){
                             kindId = item.kindid;
@@ -222,103 +203,14 @@ export default {
                     }
                     
                     items.push(
-                        h("v-list-item", {
-                                key: 'act-' + item.id,
-                                on: {click: ()=>{
-                                        (!!this.store.hasonline) ? this.onorder(item) : void(0);
-                                }}
-                        }, [
-                            this.chips
-                                ? [h('v-list-item-icon', {class:{"mr-3": true}}, [
-                                        (!!item.promoimage) 
-                                            ? h('v-img',{props: {
-                                                                    src: url + '/static/model/view/' + item.promoimage.id,
-                                                                    "max-height": 86,
-                                                                    contain: true
-                                                                }})
-                                            : null,
-                                        (dates)
-                                            ? h('div', {class: {'sk-dates': true}}, dates)
-                                            : null
-                                    ]), /* v-list-item-icon */
-                                    h('v-list-item-content', [
-                                        h('div',{class:{'sk-name': true}}, [ item.promogoods ]),
-                                        h('div',{class:{'sk-price': true}}, [
-                                            $utils.isEmpty(item.newprice) ? null : item.newprice,
-                                            $utils.isEmpty(item.oldprice) ? null : h('span', {class:{'sk-old': true}}, item.oldprice),
-                                            h('div', {class: {"sk-units": true}}, 'руб.' +
-                                                ($utils.isEmpty(item.unitname) ? '' : ' (' + item.unitname + ')')
-                                            )
-                                        ]),
-                                        (!$utils.isEmpty(item.minamount)||!$utils.isEmpty(item.multiplicity))
-                                            ? h('div', {class: "orange--text text--darken-2"}, [
-                                                !$utils.isEmpty(item.minamount) ? h('span', 'Мин: ' + item.minamount + '; ') : null,
-                                                ' ',
-                                                !$utils.isEmpty(item.multiplicity) ? h('span', 'Кратн: ' + item.multiplicity) : null
-                                            ])
-                                            : null,
-                                        $utils.isEmpty(item.promoproducer)
-                                            ? null
-                                            : h('div', {class: {"sk-produ": true}}, item.promoproducer),
-                                        inCart 
-                                            ? h('div', {class: {"sk-from-basket": true}}, [
-                                                h('v-btn', {
-                                                    props: {outlined: true, color: 'default', 'x-small': true, rounded: true},
-                                                            on: { click: ()=>{this.frombasket(event, item.id);} }
-                                                }, 'убрать из корзины')
-                                              ])
-                                              : null
-                                        ]), /* v-list-item-content */
-                                        (!!this.store.hasonline) 
-                                            ? h('v-list-item-action',  [
-                                                inCart 
-                                                    ? h('div', {class: {"sk-in-cart": true}}, [
-                                                            h('sk-svg', {props:{xref: "#ico-cart"}})
-                                                      ])
-                                                    : h('sk-svg', {props:{xref: "#ico-right"}})
-                                              ])    /* v-list-item-action */
-                                            : null
-                                ]
-                                : h("v-card", {
+                                h(SkProdItem, {
                                     props: {
-                                                width: "100%"
-                                           }
-                                }, [
-                                    (!!item.promoimage) 
-                                        ? h('v-img', {props: {
-                                                                src: url + '/static/model/view/' + item.promoimage.id,
-                                                                "max-height": 180
-                                                     }}, [
-                                                        h('div', {class:{'sk-name': true}}, [ item.promogoods ]),
-                                                        inCart 
-                                                            ? h('div', {class: {"sk-in-cart": true}}, [
-                                                                    h('sk-svg', {props:{xref: "#ico-cart"}})
-                                                              ])
-                                                            : null
-                                                     ])
-                                        : null,
-                                        h('v-card-text', [
-                                            h('div',{class:{'sk-price': true}}, [
-                                                $utils.isEmpty(item.newprice) ? null : item.newprice,
-                                                $utils.isEmpty(item.oldprice) ? null : h('span', {class:{'sk-old': true}}, item.oldprice),
-                                                h('div', {class: {"sk-units": true}}, 'руб.' +
-                                                    ($utils.isEmpty(item.unitname) ? '' : ' (' + item.unitname + ')')
-                                                )
-                                            ]),
-                                            $utils.isEmpty(item.promoproducer)
-                                                ? null
-                                                : h('div', {class: {"sk-produ": true}}, item.promoproducer),
-                                            inCart 
-                                                ? h('div', {class: {"sk-from-basket": true}}, [
-                                                    h('v-btn', {
-                                                        props: {outlined: true, color: 'default', 'x-small': true, rounded: true},
-                                                                on: { click: ()=>{this.frombasket(event, item.id);} }
-                                                    }, 'убрать из корзины')
-                                                  ])
-                                                  : null
-                                        ])
-                                ])  /* h("v-card"... */
-                            ]));
+                                                prod: item, 
+                                                store: this.store, 
+                                                disp:  (this.chips) ? DISP_MODES.list : DISP_MODES.cards
+                                            }
+                                })  
+                    );
                 });
         }   //switch
         return h('v-list', {
@@ -345,112 +237,10 @@ export default {
             padding: 1rem 0 0.25rem 0;
             height: auto;
         }
-        & .v-list-item{
-            border-bottom: 1px solid #ccc;
-        }
-        & .v-list-item__icon{
-            flex-direction: column;
-            margin: 0 0.5rem 0 0 !important;
-            align-self: center !important;
-            justify-content: space-around;
-            width: 72px;
-            padding: 0.5rem 0;
-            & .v-image{
-                width: 72px;
-                height: auto;
-                box-shadow: 0 2px 4px rgba(0,0,0,0.18);
-                border-radius: 4px;
-            }
-            & .sk-dates{
-                font-size: 0.6rem;
-                color: $red-color;
-                margin-top: 0.15rem;
-                text-align: center;
-            }
-        }   /* .v-list-item__icon */
-        & .sk-price{
-            font-size: 1.25rem;
-            color: $red-color;
-            display: flex;
-            align-items: center;
-            justify-content: flex-start;
-            & .sk-old, & .sk-units{
-                font-size: 0.85rem;
-                display: inline-block;
-                margin-left: 0.5rem;
-                color: $gray-color;
-            }
-            & .sk-units{
-                display: block;
-            }
-            & .sk-old{
-                text-decoration: line-through;
-            }
-        }   /* .sk-price */
-        & .sk-produ{
-            font-size: 0.75rem;
-            color: $gray-color;
-        }
-        & .sk-from-basket{
-            text-align: center;
-            margin-top: 0.5rem;
-            & .v-btn{
-                border-color: $gray-color;
-                color: $gray-color;
-                text-transform: lowercase !important;
-                & .v-btn__content{
-                    color: $gray-color;
-                }
-            }
-        }
-        & .v-list-item__action{
-            & svg{
-                color: lighten($gray-color, 20%);
-                width: 18px;
-                height: 18px;
-            }
-        }
-        & .sk-in-cart{
-            width: 32px;
-            height: 32px;
-            line-height: 38px;
-            text-align: center;
-            border-radius: 50%;
-            border: 2px solid #fff;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.18);
-            background: $main-color;
-            & svg{
-                width: 18px;
-                height: 18px;
-                margin: 0 auto;
-                color: #fff;
-            }
-        }
         &.sk-cards-mode{
             & .v-list-item{
                 border-bottom: 0 none;
                 margin-bottom: 1rem;
-                & .v-card{
-                    & .v-image{
-                        width: 100%;
-                        position: relative;
-                    }
-                    & .sk-name{
-                        background: rgba(0,0,0,0.22) scroll 0 0 repeat;
-                        font-size: 1.25rem;
-                        bottom: 0;
-                        position: absolute;
-                        padding: 1rem;
-                        color: #fff;
-                        text-shadow: 0 2px 4px rgba(0,0,0,0.22);
-                        width: 100%;
-                    }
-                    & .sk-in-cart{
-                        position: absolute;
-                        top: 0.5rem;
-                        right: 0.5rem;
-                    }
-                }
             }
             
         }
@@ -490,6 +280,5 @@ export default {
                 margin-right: 0;
             }
         }   /* sk-cats-cards */
-        
     }
 </style>
