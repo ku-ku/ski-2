@@ -7,7 +7,8 @@ import {
         VListItem,
         VListItemIcon,
         VListItemContent,
-        VSkeletonLoader
+        VSkeletonLoader,
+        VIcon
     } from 'vuetify/lib';
 
 
@@ -64,7 +65,8 @@ export default {
     components: {
         VList,
         VSkeletonLoader,
-        MyItem
+        MyItem,
+        VIcon
     },
     data(){
         return {
