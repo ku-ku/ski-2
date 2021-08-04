@@ -67,29 +67,15 @@ export default {
       backUrl: (/^dev/.test(process.env.NODE_ENV)) ? '/wp'  : 'https://i.моикарты.рф',
       apiUrl:  (/^dev/.test(process.env.NODE_ENV)) ? '/api' : 'https://моикарты.рф/api/skidosapi',
       wsUrl: 'wss://моикарты.рф/notice',
-//      wsUrl: 'ws://192.168.61.73:8084/skidosapi/notice',
-      pushSndId: 349717391015
+      pushSndId: 349717391015,
+      YM_ID
   },
   proxy: {
         "/api": {
             target: 'https://xn--80apggkpo6e.xn--p1ai'
-/*            
-            target: 'http://194.87.111.126:8080/skidosapi',
-            changeOrigin: false,
-            pathRewrite: {'^/api': ''}
-*/                
         },
         "/rpc": {
             target: 'https://xn--80apggkpo6e.xn--p1ai'
-/*            
-            target: 'http://194.87.111.126:8080/sin-web/',
-            pathRewrite: {'^/rpc': ''},
-            changeOrigin: true,
-            cookiePathRewrite:{
-                "/rpc": "sin-web",
-                "*": "sin-web"
-            }
-*/                
         },
         "^/wp": {
             target: 'http://192.168.61.192',

@@ -258,7 +258,7 @@ export const actions = {
         const http = this.$http,
               opts = {
                         type: 'api-call',
-                        url: '/reset-pass',
+                        url: '/skidosapi/reset-pass',
                         dataType:'json',
                         method: 'POST',
                         contentType:'application/json;charset=utf-8',

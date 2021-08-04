@@ -84,7 +84,8 @@
                 <v-icon small>mdi-cards-variant</v-icon>
             </v-btn>
       </v-btn-toggle>  
-      <v-btn v-if="is.anon" icon to="/profile/auth">
+      <v-btn v-if="is.anon" icon to="/profile/auth"
+             class="my-auth__button">
           <v-icon>mdi-login</v-icon>
       </v-btn>
       <template v-else>
@@ -615,6 +616,11 @@ export default {
         }
         & .v-btn:last-child{
             width: 72px;
+        }
+    }
+    .my-auth__button{
+        & .v-icon{
+            color: $auth-color;
         }
     }
 </style>

@@ -23,6 +23,21 @@
         </v-row>
         <v-row v-if="is.auth">
           <v-col cols="12" sm="8" md="6" class="pa-5">
+              <v-row v-if="is.anon" class="my-anon">
+                  <v-col cols="12">
+                      <h3>Вы не авторизованы</h3>
+                      <p class="text-muted">чать функций приложения будет недоступна</p>
+                      <v-img src="/auth.png" class="my-anon__image" />
+                      <v-btn small
+                             dark
+                             rounded
+                             color="#e3404a"
+                             replace
+                             :to="{name:'profile-all', params:{pathMatch:'auth'}}">
+                          авторизоваться&nbsp;<v-icon>mdi-chevron-right</v-icon>
+                      </v-btn>
+                  </v-col>
+              </v-row>    
               <sk-near  />
               <sk-actions />
           </v-col>
@@ -119,4 +134,16 @@ export default {
         }
     }
     
+    .my-anon{
+        position: relative;
+        & h3{
+            color: #e3404a;
+            font-weight: 300;
+        }
+        & .v-btn{
+            position: absolute;
+            right: 1rem;
+            bottom: 1rem;
+        }
+    }
 </style>
