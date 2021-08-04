@@ -1,6 +1,6 @@
 <template>
     <v-row class="sk-profile">
-        <v-col cols="11" sm="8" md="4">
+        <v-col cols="11" sm="6">
             <v-form v-on:submit="on_auth($event)" 
                     action="#" v-if="has('auth')" 
                     v-model="valid">

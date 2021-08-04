@@ -1,7 +1,7 @@
 <template>
     <v-container>
-        <v-row v-if="is.user">
-          <v-col cols="12" sm="8" md="6" class="pa-5">
+        <v-row v-if="is.user" class="justify-center">
+          <v-col cols="12" sm="8" class="pa-5">
               <v-expansion-panels :value="pane" accordion focusable>
                   <v-expansion-panel key="my-cards-pane">
                       <v-expansion-panel-header disable-icon-rotate>
@@ -21,13 +21,17 @@
               </v-expansion-panels>
           </v-col>
         </v-row>
-        <v-row v-if="is.auth">
-          <v-col cols="12" sm="8" md="6" class="pa-5">
+        <v-row v-if="is.auth" class="justify-center">
+          <v-col cols="12" sm="8" class="pa-5">
               <v-row v-if="is.anon" class="my-anon">
                   <v-col cols="12">
                       <h3>Вы не авторизованы</h3>
                       <p class="text-muted">чать функций приложения будет недоступна</p>
-                      <v-img src="/auth.png" class="my-anon__image" />
+                      <!-- at: https://www.uplabs.com/depotvisual -->
+                      <v-img src="/auth.png" 
+                             class="my-anon__image" 
+                             contain
+                             max-height="320" />
                       <v-btn small
                              dark
                              rounded
@@ -42,14 +46,12 @@
               <sk-actions />
           </v-col>
         </v-row>
-        <v-row v-else>
-            <v-col cols="12" sm="8" md="6" class="pa-5">
-                <v-skeleton-loader type="list-item-avatar"></v-skeleton-loader>
-                <v-skeleton-loader type="list-item-avatar"></v-skeleton-loader>
-                <v-skeleton-loader type="list-item-avatar"></v-skeleton-loader>
+        <v-row v-else class="justify-center">
+            <v-col cols="12" sm="6" class="pa-5">
+                <v-skeleton-loader type="list-item-avatar@3"></v-skeleton-loader>
             </v-col>
         </v-row>
-    </v-container>
+    </v-container>    
 </template>
 
 <script>
