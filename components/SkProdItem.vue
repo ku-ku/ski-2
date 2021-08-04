@@ -179,7 +179,8 @@ export default {
         },  //has
         onorder(){
             if (this.has("online")){
-                this.$router.push({path: "/stores/" + this.store.id + "/catalog/" + this.prod.nameid});
+                this.$store.commit('active/setAction', this.prod);
+                this.$router.push({path: "/stores/" + this.store.id + "/catalog/" + this.prod.nameid || this.prod.id});
             }
         },   //onorder
         frombasket(){

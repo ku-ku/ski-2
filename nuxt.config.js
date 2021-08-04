@@ -1,5 +1,6 @@
 const webpack = require('webpack');
 const path = require('path');
+const YM_ID = 71129278;
 
 export default {
   ssr: false,
@@ -52,7 +53,14 @@ export default {
 
   modules: [
       '@nuxtjs/proxy',
-      '@nuxtjs/style-resources'
+      '@nuxtjs/style-resources',
+      ['@nuxtjs/yandex-metrika', {
+        id: YM_ID,
+        webvisor: true,
+        clickmap:true,
+        trackLinks:true,
+        accurateTrackBounce:true
+      }]
   ],
   env: {
       rpcUrl:  (/^dev/.test(process.env.NODE_ENV)) ? '/rpc' : 'https://моикарты.рф/rpc',

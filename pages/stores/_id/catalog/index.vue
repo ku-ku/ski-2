@@ -34,7 +34,9 @@ import {
          VAlert
     } from 'vuetify/lib';
 import SkSvg from '~/components/SkSvg';
-    
+import SkProdItem from '~/components/SkProdItem';
+import { DISP_MODES } from '~/utils/index';
+
 const FIND_MODE = Object.assign(MODES, {
     abc: 99,
     cat: 999,
@@ -73,7 +75,8 @@ export default {
         VTreeview,
         VDivider,
         VAlert,
-        SkSvg
+        SkSvg,
+        SkProdItem
     },
     async asyncData(context){
         const { store } = context;
@@ -191,12 +194,18 @@ export default {
                 resp.result.data.map((a)=>{
                     data.push({
                         id: a[4], 
+                        nameid: a[4],
                         name: a[6], 
+                        promogoods: a[6],
                         price: a[11], 
+                        newprice: a[11],
                         img: a[5], 
+                        promoimage: {id: a[5]},
                         unit: a[13], 
+                        unitname: a[13], 
                         minamount: a[21], 
-                        multiplicity: a[22]
+                        multiplicity: a[22],
+                        n: 0
                     });
                 });
                 if (!this.totals){
@@ -335,6 +344,9 @@ export default {
                     h('v-list', {props:{dense: true}, class: {'sk-find-prods': true}}, [
                         (this.data.length > 0)
                             ? this.data.map((d)=>{
+                                return h(SkProdItem, {props: {prod: d, store: this.parent, disp: DISP_MODES.list}});
+                                
+  /*                              
                                 return h('v-list-item', {
                                         key: 'prod-' + d.id,
                                         on: {click: ()=>{this.open(d);}}
@@ -368,6 +380,8 @@ export default {
                                             h('sk-svg', {props:{xref:"#ico-right"}, style:{color:"#ccc"}})
                                         ])
                                 ]);
+*/                                
+                                
                             })
                             : h('v-list-item', {key: 'prod-not-found', props: {'three-line': true}}, [ 
                                 h('v-list-item-content', [
