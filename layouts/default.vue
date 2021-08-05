@@ -42,20 +42,67 @@
       app
       right
       @input="rightNavi"
-    >
-        <template v-slot:prepend>
-            <v-list  :color="ab.bg" :dark="ab.dark">
-                <v-list-item two-line v-if="is.store" @click.stop="rightDrawer=false">
-                    <v-list-item-avatar>
-                        <img :src="$store.getters['active/brand']('ava')" />
-                    </v-list-item-avatar>
-                    <v-list-item-content>
-                      <v-list-item-title>{{activeStore.title}}</v-list-item-title>
-                      <v-list-item-subtitle>{{geo.a2s(activeStore.location)}}</v-list-item-subtitle>
-                    </v-list-item-content>
-                </v-list-item>
-            </v-list>    
-        </template>
+      width="320">
+        <template v-slot:prepend 
+                  v-if="is.store">
+                    <v-list :color="ab.bg" 
+                            :dark="ab.dark">
+                        <v-menu close-on-click
+                                offset-y
+                                bottom
+                                right
+                                open-on-hover
+                                tile
+                                transition="scale-transition"
+                                open-delay="300">
+                            <template v-slot:activator="{ on, attrs }">
+                                <v-list-item two-line
+                                             v-on="on"
+                                             v-on:click.stop.prevent="rightDrawer=false">
+                                    <v-list-item-avatar>
+                                        <v-icon>mdi-chevron-left</v-icon>
+                                    </v-list-item-avatar>
+                                    <v-list-item-avatar>
+                                        <img :src="$store.getters['active/brand']('ava')" />
+                                    </v-list-item-avatar>
+                                    <v-list-item-content>
+                                      <v-list-item-title>{{activeStore.title}}</v-list-item-title>
+                                      <v-list-item-subtitle>{{geo.a2s(activeStore.location)}}</v-list-item-subtitle>
+                                    </v-list-item-content>
+                                </v-list-item>
+                            </template>
+                            <v-list nav
+                                    dense
+                                    :color="ab.bg" 
+                                    :dark="ab.dark">
+                                    <v-list-item
+                                        :to="{name: 'stores-id-filials', params:{id: activeStore.id}}">
+                                        <v-list-item-icon><v-icon>mdi-storefront-outline</v-icon></v-list-item-icon>
+                                        <v-list-item-title>Магазины</v-list-item-title>
+                                    </v-list-item>
+                                    <v-list-item
+                                        :to="{name: 'stores-id-catalog', params:{id: activeStore.id}}">
+                                        <v-list-item-icon><v-icon>mdi-magnify</v-icon></v-list-item-icon>
+                                        <v-list-item-title>Номенклатура</v-list-item-title>
+                                    </v-list-item>
+                                    <v-list-item v-on:click="goActive">
+                                        <v-list-item-icon><v-icon>mdi-qrcode</v-icon></v-list-item-icon>
+                                        <v-list-item-title>Главная</v-list-item-title>
+                                    </v-list-item>
+                                    <v-list-item
+                                        :to="{name: 'stores-id-share', params:{id: activeStore.id}}">
+                                        <v-list-item-icon><v-icon>mdi-share-variant-outline</v-icon></v-list-item-icon>
+                                        <v-list-item-title>Поделиться</v-list-item-title>
+                                    </v-list-item>
+                                    <v-list-item
+                                        :to="{name: 'stores-id-info', params:{id: activeStore.id}}">
+                                        <v-list-item-icon><v-icon>mdi-information-variant</v-icon></v-list-item-icon>
+                                        <v-list-item-title>Информация</v-list-item-title>
+                                    </v-list-item>
+                            </v-list>
+                        </v-menu>
+                    </v-list>
+        </template><!-- prepend -->
         <v-divider></v-divider>        
             <SkStoreActionsNavi 
                 ref="actionsNavi"
@@ -70,7 +117,8 @@
       :color="ab.bg"
       :dark="ab.dark"
     >
-      <v-btn icon v-if="hasBack" @click="$router.back()">
+      <v-btn icon v-if="hasBack" 
+             v-on:click="back">
           <v-icon>mdi-arrow-left</v-icon>
       </v-btn>    
       <v-app-bar-nav-icon v-else @click.stop="drawer = !drawer" />
@@ -210,7 +258,7 @@
 
 <script>
 const APP_NAME = "моикарты.рф";
-import { MODES, DISP_MODES } from '~/utils';
+import { MODES, DISP_MODES, ST_MODES } from '~/utils';
 import {eventBus} from '~/utils/eb';
 import SkBasket from '~/components/SkBasket';
 import SkShopper from '~/components/SkShopper';
@@ -439,7 +487,6 @@ export default {
             this.snackbar = sb;
         },
         rightNavi(val){
-            console.log('rightNavi', val);
             if (val){
                 this.$refs["actionsNavi"].$fetch();
             }
@@ -502,6 +549,20 @@ export default {
                 }
             });
         }, 
+        goActive(){
+            if ('stores-id' !== this.$route.name){
+                this.$router.replace({
+                    name: 'stores-id', 
+                    params:{id: this.activeStore.id, state: ST_MODES.qr}
+                });
+            }
+        },
+        back(){
+            if ('stores-id' === this.$route.name){
+                return this.$router.replace({name: 'index'});
+            }
+            this.$router.back();
+        },
         authOrReg(){
             this.fAuthOrgReg = (new Date()).getTime();
         }

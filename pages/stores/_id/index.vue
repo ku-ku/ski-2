@@ -24,7 +24,6 @@ import { Scroll } from 'vuetify/lib/directives';
 const DEF_LOGO_H = 200;
 
 export default {
-    props: ['id'],
     head(){
         return {
             title: (!!this.store) ? this.store.title : 'loading...',
@@ -52,13 +51,13 @@ export default {
     data(){
         return {
             mode: MODES.none,
-            state: ST_MODES.none,
             store: null,
             card: null,
             fill: null,
             sending: false,
             fab: false,
             map: false,
+            state: ST_MODES.none,
             logo: {
                 height: DEF_LOGO_H,
                 loading: MODES.loading
@@ -71,8 +70,6 @@ export default {
         this.card = null;   //reset
         const id = this.$route.params.id;
         
-        
-        
         try {
             const store = await this.$store.dispatch("loadStore", {id: id});
             this.store = store;
@@ -84,7 +81,7 @@ export default {
                 });
             }
             this.mode = MODES.default;
-            this.state = ST_MODES.def;
+            this.state = this.$route.params.hasOwnProperty("state") ? this.$route.params.state : ST_MODES.def;
             this.logo.height = DEF_LOGO_H;
             this.logo.loading= MODES.loading;
             this.see();
@@ -110,6 +107,8 @@ export default {
             };
             
             _h.logo = (_h.store) ? (!!this.store.brandlogo) : false;
+            
+            
             _h.addr = (_h.store) ? (!!this.store.location) : false;
             _h.fills = (_h.store) ? (this.store.pointscount > 0) : false;
             
@@ -117,6 +116,12 @@ export default {
         },
         bonuces(){
             return (this.has.card) ? this.card.amount : null;
+        },
+        id(){
+            return this.$store.state.active.store?.id || false;
+        },
+        xs(){
+            return ("xs" === this.$vuetify.breakpoint.name);
         }
     },
     methods:{
@@ -147,6 +152,11 @@ export default {
                 ]
             };
             this.$http.post(opts);
+            if (typeof window["ym"] !== "undefined"){
+                ym($nuxt.context.env.YM_ID, 'hit', $nuxt.$route.fullPath, {
+                    title: this.store.title
+                });
+            }
         },
         async onmap(){
             var points;
@@ -195,6 +205,9 @@ export default {
     watch: {
         id(id){
             this.$fetch();
+            if (!this.xs){
+                this.defs({avaNeed: true});
+            }
         }
     },
     beforeRouteLeave(to, from, next){
@@ -226,10 +239,11 @@ export default {
         const url = this.$http.env.rpcUrl;
         const bg = this.has.store ? this.store.brandcolor || "orange" : "default";
         const bc = this.has.store ? this.store.balancecolor || "#ffb300" : "default";
-        var bigLogo = ( 
+        var bigLogo = this.xs //smart`s only
+                    && ( 
                             ((this.state===ST_MODES.def)&&(this.has.logo))
                           ||((this.state===ST_MODES.qr)&&(!this.has.card))
-                      );
+                    );
         var conte = [];
         
         switch(this.mode){
@@ -263,7 +277,8 @@ export default {
                     conte.push(h('v-img', {
                                     props: {
                                                 src: src, 
-                                                width:'100%', 
+                                                width:'100%',
+                                                "max-width": 320,
                                                 "min-height": 100,
                                                 height:'auto',
                                                 eager: true,
@@ -333,7 +348,9 @@ export default {
                     h(SkStoreNavi, {
                         props: {store: this.store, has: this.has, value: this.state},
                         on: {state: (s)=>{this.state = s;}},
-                        style: {marginTop: (this.state === ST_MODES.def) ? '-36px': '0'}
+                        style: this.xs 
+                                    ? {marginTop: (this.state === ST_MODES.def) ? '-36px': '0'}
+                                    : {marginTop: '1rem'}
                     }),
                     items
                 ]));
@@ -399,6 +416,7 @@ export default {
     .sk-store{
         & .sk-store-brand{
             min-height: 160px;
+            margin: 0 auto;
             opacity: 0;
             &.sk-thumbinal{
                 opacity: 1;
