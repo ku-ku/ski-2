@@ -136,14 +136,13 @@
              class="my-auth__button">
           <v-icon>mdi-login</v-icon>
       </v-btn>
-      <template v-else>
-          <div v-if="is.store">
+      <template v-else-if="is.store">
+          <v-btn icon
+                 v-on:click.stop="rightDrawer = !rightDrawer">
             <v-img v-if="fAvaNeed" :src="$store.getters['active/brand']('ava')" 
-                   class="sk-store-logo"
-                   @click.stop="rightDrawer = !rightDrawer"
-                   />
-            <v-app-bar-nav-icon v-else @click.stop="rightDrawer = !rightDrawer" />
-          </div>
+                   class="sk-store-logo" />
+            <v-app-bar-nav-icon v-else  />
+          </v-btn>
       </template>
     </v-app-bar>
     <v-main>
@@ -346,16 +345,6 @@ export default {
         return {
             defs: (defs)=>{
                 self.fAvaNeed = defs.avaNeed;
-                const logo = $(self.$el).find(".v-toolbar .sk-store-logo");
-                if (defs.avaNeed){
-                    if (!logo.hasClass("show")){
-                        logo.addClass("show");
-                    }
-                } else {
-                    if (logo.hasClass("show")){
-                        logo.removeClass("show");
-                    }
-                }
             }
         };
     },
@@ -651,13 +640,8 @@ export default {
             width: 48px;
             height: 48px;
             border-radius: 500px;
-            opacity: 0;
             border: 2px solid #fff;
             box-shadow: 0 2px 4px rgba(0,0,0, 0.18);
-            transition: opacity 1s ease-in-out;
-            &.show{
-                opacity: 1;
-            }
         }
     }
     .sk-order-now{

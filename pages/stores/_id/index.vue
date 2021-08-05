@@ -68,10 +68,10 @@ export default {
     async fetch(){
         this.mode = MODES.loading;
         this.card = null;   //reset
-        const id = this.$route.params.id;
+        const id = this.id;
         
         try {
-            const store = await this.$store.dispatch("loadStore", {id: id});
+            const store = await this.$store.dispatch("loadStore", {id});
             this.store = store;
             this.$store.commit("active/setStore", store);
             if (this.$store.getters["profile/is"]("user")){
@@ -107,8 +107,6 @@ export default {
             };
             
             _h.logo = (_h.store) ? (!!this.store.brandlogo) : false;
-            
-            
             _h.addr = (_h.store) ? (!!this.store.location) : false;
             _h.fills = (_h.store) ? (this.store.pointscount > 0) : false;
             
@@ -118,7 +116,7 @@ export default {
             return (this.has.card) ? this.card.amount : null;
         },
         id(){
-            return this.$store.state.active.store?.id || false;
+            return this.$route.params.id;
         },
         xs(){
             return ("xs" === this.$vuetify.breakpoint.name);
@@ -204,9 +202,13 @@ export default {
     },
     watch: {
         id(id){
-            this.$fetch();
-            if (!this.xs){
-                this.defs({avaNeed: true});
+            if ( !$utils.isEmpty(id) ){
+                this.$fetch();
+                if (!this.xs){
+                    this.$nextTick(()=>{
+                        this.defs({avaNeed: true});
+                    });
+                }
             }
         }
     },

@@ -5,7 +5,13 @@
                     action="#" v-if="has('auth')" 
                     v-model="valid">
                 <v-card class="elevation-2">
-                    <v-card-title>{{modName}}</v-card-title>
+                    <v-card-title class="justify-space-between">
+                        {{modName}}
+                        <v-avatar tile
+                                  size="96">
+                            <v-img src="/auth.png" contain />
+                        </v-avatar>
+                    </v-card-title>
                     <v-card-text>
                         <v-text-field
                             label="Ваш e-mail"
@@ -32,7 +38,7 @@
                         <v-btn rounded 
                                type="submit" 
                                :loading="sending"
-                               dark color="red darken-4" >Войти</v-btn>
+                               dark color="red darken-4">Войти</v-btn>
                         <v-btn text small 
                                class="ref-register" 
                                to="/profile/register">
@@ -47,7 +53,13 @@
                     v-on:submit="on_register($event)" 
                     action="#">
                 <v-card class="elevation-4">
-                    <v-card-title>{{ modName }}</v-card-title>
+                    <v-card-title class="justify-space-between">
+                        {{modName}}
+                        <v-avatar tile
+                                  size="96">
+                            <v-img src="/auth-register.png" contain />
+                        </v-avatar>
+                    </v-card-title>
                     <v-card-text>
                         <v-text-field
                             name="u"
@@ -133,8 +145,15 @@
                 </v-card>
             </v-form>
             <v-form v-else-if="has('forgot')" v-on:submit="on_forgot($event)" action="#">
-                <v-card class="elevation-4">
-                    <v-card-title>{{modName}}</v-card-title>
+                <v-card class="elevation-4"
+                        color="#f4f4f4">
+                    <v-card-title class="justify-space-between">
+                        {{modName}}
+                        <v-avatar tile
+                                  size="96">
+                            <v-img src="/auth-reset.png" contain />
+                        </v-avatar>
+                    </v-card-title>
                     <v-card-text>
                         <v-text-field
                             name="eml"
@@ -242,6 +261,7 @@ export default {
             error: '',
             alert: 'warning',    //for messages, TODO:
             sending: false,
+            succeess: false,
             pwMessage: ''
         };
     },
@@ -341,6 +361,7 @@ export default {
                 $('input[name="eml"]').trigger('focus');
                 return false;
             }
+            this.success = false;
             this.error = '';
             this.sending = true;
             (async ()=>{
@@ -348,7 +369,11 @@ export default {
                     const u = { login: eml, password: pwd };
                     const res = await this.$store.dispatch('profile/login', {user: u});
                     this.sending = false;
-                    this.$router.replace({name: 'index'});
+                    this.success = true;
+                    this.$forceUpdate();
+                    setTimeout(()=>{
+                        this.$router.replace({name: 'index'});
+                    }, 1000);
                 } catch(e) {
                     console.log(e);
                     this.sending = false;

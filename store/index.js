@@ -130,7 +130,7 @@ export const actions = {
     loadStore(store, payload){
         var opts = {
             type: 'core-read',
-            query: 'sin2:/v:c4e208aa-a355-49bf-8c00-4175a9ed5006/?id=' + payload.id
+            query: `sin2:/v:c4e208aa-a355-49bf-8c00-4175a9ed5006/?id=${ payload.id }`
         };
         return new Promise((resolve, reject)=>{
             (async ()=>{
