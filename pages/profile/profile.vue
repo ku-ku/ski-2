@@ -236,8 +236,9 @@ export default {
         },    //on_profile
         signout(e){
             e.preventDefault();
-            this.$store.dispatch('profile/logout').then(()=>{
-                this.$router.replace({path:'/profile/auth'});
+            this.$store.dispatch('profile/logout').then(async ()=>{
+                await this.$router.replace({name:'index'});
+                setTimeout(()=>{window.location.reload();}, 300);
             });
             return false;
         }
