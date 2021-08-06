@@ -283,7 +283,7 @@ const actions = {
                 try {
                     const opts = {
                         type: "core-read",
-                        query: 'sin2:/v:286cf6de-309f-4eba-b335-25a46591463b?filter=eq(field(".nameId"),param("' + payload.id + '", "id"))'
+                        query: `sin2:/v:286cf6de-309f-4eba-b335-25a46591463b?filter=or(eq(field(".id"),param("${ payload.id }", "id")), eq(field(".nameId"),param("${ payload.id }", "id")))`
                     };
                     var res = await this.$http.post(opts);
                     if (!!res.error){

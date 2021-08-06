@@ -287,11 +287,10 @@ export const actions = {
         });
     },   //loadBanners
     loadInfos(store, payload){
-        const attr = payload?.attr || 1;  //Attr=1 сл.картинка, Attr=2 товары
         const opts = {
                     type: 'query',
                     query: '36e7ca7b-b8aa-4372-9ed1-cd089e720ca9.getAppStats',
-                    params: { attr }
+                    params: { }
         };
         
         return new Promise(async (resolve, reject)=>{
@@ -300,14 +299,12 @@ export const actions = {
                 if (!!res.error){
                     throw res.error;
                 }
-                //const data = $utils.sin2objA(res.result.columnIndexes, res.result.data);
                 resolve(res.result.data);
             }catch(e){
                 reject(e);
             }
         });
     }
-    
 };
 
 export const getters = {

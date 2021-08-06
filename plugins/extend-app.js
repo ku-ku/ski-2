@@ -16,6 +16,11 @@ export default async function ({ app }) {
         app.mixins = [];
     }
     app.mixins.push({
+        computed: {
+            APP_TITLE(){
+                return this.context.env.APP_TITLE;
+            }
+        },
         beforeCreate(){
             if (!!window){
                 window["ski"] = this;

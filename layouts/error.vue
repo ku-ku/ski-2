@@ -1,15 +1,16 @@
 <template>
-  <v-app dark>
-    <h1 v-if="error.statusCode === 404">
-      {{ pageNotFound }}
-    </h1>
-    <h1 v-else>
-      {{ otherError }}
-    </h1>
-    <NuxtLink to="/">
-      Home page
-    </NuxtLink>
-  </v-app>
+    <v-app>
+        <v-app-bar fixed app>
+            <v-btn icon to="/" class="mr-3"><v-icon>mdi-chevron-left</v-icon></v-btn>
+            {{ $nuxt.APP_TITLE }}
+        </v-app-bar>
+        <v-container class="fill-height">
+            <div v-if="(error.statusCode === 404)" class="fill-height sk-404"></div>
+            <div v-else>
+                {{ otherError }}
+            </div>    
+        </v-container>
+    </v-app>
 </template>
 
 <script>
@@ -23,22 +24,29 @@ export default {
   },
   data () {
     return {
-      pageNotFound: '404 Not Found',
+      pageNotFound: '404 страница не найдена',
       otherError: 'An error occurred'
-    }
+    };
   },
   head () {
-    const title =
-      this.error.statusCode === 404 ? this.pageNotFound : this.otherError
     return {
-      title
-    }
+        title:  (this.error.statusCode === 404) ? this.pageNotFound : this.otherError
+    };
   }
 }
 </script>
-
-<style scoped>
-h1 {
-  font-size: 20px;
-}
+<style lang="scss">
+    .sk-404{
+        background: #fff url('/404.png') center center scroll no-repeat;
+        min-height: 527px;
+        height: 100%;
+        min-width: 100%;
+    }
+    @media screen and (max-width: 600px) {
+        .sk-404{
+            min-height: calc(100vh - 64px);
+            background-size: contain;
+        }
+    }
+    
 </style>

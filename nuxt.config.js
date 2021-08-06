@@ -1,6 +1,7 @@
 const webpack = require('webpack');
 const path = require('path');
 const YM_ID = 71129278;
+const APP_TITLE = "моикарты.рф";
 
 export default {
   ssr: false,
@@ -8,8 +9,8 @@ export default {
     dir: "www"
   },
   head: {
-    titleTemplate: '%s - моикарты',
-    title: 'моикарты.рф',
+    titleTemplate: `%s - ${ APP_TITLE }`,
+    title: APP_TITLE,
     htmlAttrs: {
       lang: 'ru'
     },
@@ -63,6 +64,7 @@ export default {
       }]
   ],
   env: {
+      APP_TITLE,
       rpcUrl:  (/^dev/.test(process.env.NODE_ENV)) ? '/rpc' : 'https://моикарты.рф/rpc',
       backUrl: (/^dev/.test(process.env.NODE_ENV)) ? '/wp'  : 'https://i.моикарты.рф',
       apiUrl:  (/^dev/.test(process.env.NODE_ENV)) ? '/api' : 'https://моикарты.рф/api/skidosapi',

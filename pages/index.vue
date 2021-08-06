@@ -41,8 +41,9 @@
                           авторизоваться&nbsp;<v-icon>mdi-chevron-right</v-icon>
                       </v-btn>
                   </v-col>
-              </v-row>    
+              </v-row>
               <sk-near  />
+              <sk-tops />
               <sk-actions />
           </v-col>
         </v-row>
@@ -59,11 +60,14 @@ import { MODES } from "~/utils/index.js";
 import SkMy from "~/components/SkMy";
 import SkNear from "~/components/SkNear";
 import SkActions from "~/components/SkActions";
+import SkTops from "~/components/SkTops";
 
 export default {
     components: {
         SkMy,
-        SkNear
+        SkNear,
+        SkActions,
+        SkTops
     },
     data(){
         return {
