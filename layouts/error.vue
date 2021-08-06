@@ -1,16 +1,15 @@
 <template>
-    <v-app>
+    <v-container class="fill-height">
         <v-app-bar fixed app>
-            <v-btn icon to="/" class="mr-3"><v-icon>mdi-chevron-left</v-icon></v-btn>
+            <v-btn icon 
+                   to="/" 
+                   replace
+                   class="mr-3"><v-icon>mdi-chevron-left</v-icon></v-btn>
             {{ $nuxt.APP_TITLE }}
         </v-app-bar>
-        <v-container class="fill-height">
-            <div v-if="(error.statusCode === 404)" class="fill-height sk-404"></div>
-            <div v-else>
-                {{ otherError }}
-            </div>    
-        </v-container>
-    </v-app>
+        <div v-if="(error.statusCode === 404)" class="fill-height sk-404"></div>
+        <div v-else v-html="otherError"></div>    
+    </v-container>
 </template>
 
 <script>
@@ -22,13 +21,21 @@ export default {
       default: null
     }
   },
-  data () {
+  data(){
     return {
-      pageNotFound: '404 страница не найдена',
-      otherError: 'An error occurred'
+        pageNotFound: '404 страница не найдена',
+        otherError: 'Ошибка'
     };
   },
-  head () {
+  mounted(){
+        console.log(this.error);
+        var s = "<h3>Ошибка</h3>";
+        if (!!this.error.message){
+            s += `<div class="text-muted">информация для технической поддержки: Error #${ this.error.statusCode } ${ this.error.message }</div>`;
+        }
+        this.otherError = s;
+  },
+  head(){
     return {
         title:  (this.error.statusCode === 404) ? this.pageNotFound : this.otherError
     };
@@ -39,7 +46,7 @@ export default {
     .sk-404{
         background: #fff url('/404.png') center center scroll no-repeat;
         min-height: 527px;
-        height: 100%;
+        height: calc(100% - 64px);
         min-width: 100%;
     }
     @media screen and (max-width: 600px) {

@@ -2,19 +2,20 @@
     <div class="sk-tops">
         <template v-if="has('tops')">
             <h3><v-icon color="accent">mdi-shopping-outline</v-icon>&nbsp;Сейчас покупают</h3>
-            <v-row v-if="has('store')" 
+            <v-row v-if="has('prods')" 
                    class="sk-tops__store">
                 <v-col cols="12">
-                    <v-parallax :src="store.src"
+                    <v-parallax :src="prods[0].src"
                                 height="200"
-                                v-on:click="gostore">
-                        <h2 v-html="store.name"></h2>
+                                v-on:click="goprod(prods[0])">
+                        <h2 v-html="prods[0].name"></h2>
                     </v-parallax>
                 </v-col>
             </v-row>
             <v-row v-if="has('prods')"
                    class="sk-tops__prods">
                 <v-col v-for="(p, n) in prods"
+                       v-if="(n > 0)"
                        :key="'prod-' + n"
                        cols="4">
                     <v-img :src="p.src" 
@@ -65,10 +66,6 @@ export default {
     },
     async fetch(){
         this.tops = await this.$store.dispatch("loadInfos");
-        this.$nextTick(()=>{
-            console.log('store', this.store);
-            console.log('prods', this.prods);
-        });
     },
     methods: {
         has(q){
@@ -90,10 +87,7 @@ export default {
             try {
                 const prod = await this.$store.dispatch("active/getProd", p);
                 console.log('prod:', prod);
-                this.$router.push({
-                    name: 'stores-id-catalog-id', 
-                    params: {id: prod.id}
-                });
+                this.$router.push({name: 'stores-id', params:{id: prod.tenantid, prod}});
             } catch(e){
                 console.log('ERR (goprod)', e);
             }

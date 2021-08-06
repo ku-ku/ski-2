@@ -198,7 +198,19 @@ export default {
                 }
                 this.sending = false;
             }
-        }   /*takecard*/
+        },   /* takecard */
+        onactions(){
+            if (!!this.$route.params.prod){
+                this.$nextTick(()=>{
+                    const el = $(`.sk-prod-item[data-prod-id="${this.$route.params.prod.id}"]`);
+                    if (el.length>0){
+                        this.$vuetify.goTo(el.get(0), {offset: 20}).then(()=>{
+                            el.addClass('highlight');
+                        });
+                    }
+                });
+            }
+        }   /* onactions */
     },
     watch: {
         id(id){
@@ -344,7 +356,10 @@ export default {
                     }
                 }
                 items.push(h('sk-store-banners', {props: {store: this.store}}));
-                items.push(h('sk-store-actions', {props: {store: this.store}}));
+                items.push(h('sk-store-actions', {
+                                props: {store: this.store},
+                                on: {load: this.onactions}
+                            }));
                 
                 conte.push(h('v-card-text', [
                     h(SkStoreNavi, {
@@ -411,7 +426,7 @@ export default {
         }, conte );
     }
 }    
-</script>    
+</script>
 <style lang="scss">
     @import "~/assets/index.scss";
     
@@ -492,5 +507,4 @@ export default {
         }
         
     }   /* .sk-store */
-    
-</style>    
+</style> 

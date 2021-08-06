@@ -1,5 +1,7 @@
 <template>
-    <v-row class="sk-profile">
+    <v-row class="sk-profile"
+           :dark="has('error')"
+           v-bind:class="{error: has('error')}">
         <v-col cols="11" sm="6">
             <v-form v-on:submit="on_auth($event)" 
                     action="#" v-if="has('auth')" 
@@ -377,7 +379,12 @@ export default {
                 } catch(e) {
                     console.log(e);
                     this.sending = false;
-                    this.error = 'Логин или пароль неверный';
+                    this.success = false;
+                    if ( /^(unauthorized)+/i.test(e.statusText) ){
+                        this.error = 'Логин или пароль неверный';
+                    } else {
+                        this.error = `Ошибка авторизации: ${e.statusText}`;
+                    }
                 }
             })();
             return false;
@@ -520,7 +527,7 @@ export default {
 
 <style lang="scss" scoped>
     .sk-profile{
-        min-height: calc(100vh - 56px);
+        min-height: calc(100vh - 44px);
         align-content: center;
         align-items: center;
         justify-content: center;

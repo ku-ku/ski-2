@@ -1,6 +1,7 @@
 <template>
     <v-list-item :key="'prod-' + prod.id"
                  class="sk-prod-item"
+                 :data-prod-id="prod.id"
                  v-on:click="onorder">
         <template v-if="disp===DISP_MODES.list">
             <v-list-item-icon class="mr-3">

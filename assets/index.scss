@@ -8,3 +8,12 @@
 .sk-whited{
     background: #fff;
 }
+
+@keyframes highlight {
+        0%   {background-color: $main-color;}
+        100% {background-color: unset;}
+    }
+
+.highlight {
+    animation: highlight 2.5s;
+}    
